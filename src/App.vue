@@ -2,11 +2,12 @@
 import LeftPanel from "./components/LeftPanel.vue";
 import AppHeader from "./components/AppHeader.vue";
 import AppMessage from "./components/AppMessage.vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useMenuStore } from "@/stores/menuStore.ts";
 
 const menuStore = useMenuStore();
 const route = useRoute();
+const router = useRouter();
 
 console.log("menu", menuStore.menu);
 const authChecked = () => {
@@ -16,6 +17,11 @@ const authChecked = () => {
     console.log(err);
   }
 };
+
+const token = localStorage.getItem("token");
+if (!token) {
+  router.push({ name: "login" });
+}
 </script>
 <template>
   <AppMessage />

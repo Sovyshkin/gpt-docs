@@ -1,6 +1,6 @@
 <template>
   <div class="wrap-logo">
-    <img class="logo" src="../assets/LOGO.png" alt="" />
+    <img class="logo" src="@/assets/LOGO.png" alt="" />
   </div>
 </template>
 <style scoped>

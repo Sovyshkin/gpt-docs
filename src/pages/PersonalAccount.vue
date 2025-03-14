@@ -6,7 +6,7 @@ export default {
   components: { PesonalData, AppCompanies },
   data() {
     return {
-      active: 1,
+      active: 2,
     };
   },
   methods: {

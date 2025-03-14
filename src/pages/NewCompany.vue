@@ -1,45 +1,26 @@
-<script>
-export default {
-  name: "NewCompany",
-  components: {},
-  data() {
-    return {
-      type: "",
-      name: "",
-      fullName: "",
-      corporateType: "",
-      registrationNumber: "",
-      residenceCountry: "",
-      countryCompany: "",
-      taxCountry: "",
-      taxPayerId: "",
-      vatNumber: "",
-      officeAddress: "",
-      zipCode: "",
-      postalOfficeAddress: "",
-      zipCodePostal: "",
-      phone: "",
-      email: "",
-      corporates: [
-        "Private company limited by shares",
-        "Public company by shares",
-        "Public join stock company",
-        "Open joint stock company",
-        "Public Corporation",
-        "Private joint stock company",
-      ],
-      countries: ["Russia"],
-    };
-  },
-  methods: {
-    goBack() {
-      try {
-        this.$router.go(-1);
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  },
+<script setup>
+import { ref } from "vue";
+import { useLegalCompany } from "@/stores/legalCompany.ts";
+import { useRouter } from "vue-router";
+
+const legalCompany = useLegalCompany();
+const router = useRouter();
+
+const corporates = ref([
+  "Private company limited by shares",
+  "Public company by shares",
+  "Public join stock company",
+  "Open joint stock company",
+  "Public Corporation",
+  "Private joint stock company",
+]);
+const countries = ref(["Russia"]);
+const goBack = () => {
+  try {
+    router.go(-1);
+  } catch (err) {
+    console.log(err);
+  }
 };
 </script>
 <template>
@@ -58,7 +39,7 @@ export default {
             type="text"
             id="name"
             name="name"
-            v-model="type"
+            v-model="legalCompany.type"
             class="group-item"
             placeholder="Enter your full name"
           />
@@ -69,7 +50,7 @@ export default {
             type="text"
             id="name"
             name="name"
-            v-model="name"
+            v-model="legalCompany.name"
             class="group-item"
             placeholder="Enter the Name"
           />
@@ -83,7 +64,7 @@ export default {
             type="text"
             id="name"
             name="name"
-            v-model="fullName"
+            v-model="legalCompany.fullName"
             class="group-item"
             placeholder="Full company name"
           />
@@ -94,7 +75,7 @@ export default {
             type="text"
             id="name"
             name="name"
-            v-model="corporateType"
+            v-model="legalCompany.corporateType"
             class="group-item"
           >
             <option :value="item" v-for="(item, i) in corporates" :key="i">
@@ -112,7 +93,7 @@ export default {
             type="text"
             id="registrationNumber"
             name="registrationNumber"
-            v-model="registrationNumber"
+            v-model="legalCompany.registrationNumber"
             class="group-item"
             placeholder="123456789"
           />
@@ -125,7 +106,7 @@ export default {
             type="text"
             id="countryCompany"
             name="countryCompany"
-            v-model="countryCompany"
+            v-model="legalCompany.countryCompany"
             class="group-item"
           >
             <option :value="item" v-for="(item, i) in countries" :key="i">
@@ -143,7 +124,7 @@ export default {
             type="text"
             id="taxCountry"
             name="taxCountry"
-            v-model="taxCountry"
+            v-model="legalCompany.taxCountry"
             class="group-item"
           >
             <option :value="item" v-for="(item, i) in countries" :key="i">
@@ -157,7 +138,7 @@ export default {
             type="text"
             id="taxPayerId"
             name="taxPayerId"
-            v-model="taxPayerId"
+            v-model="legalCompany.taxPayerId"
             class="group-item"
             placeholder="123456789"
           />
@@ -169,7 +150,7 @@ export default {
           type="text"
           id="vatNumber"
           name="vatNumber"
-          v-model="vatNumber"
+          v-model="legalCompany.vatNumber"
           class="group-item"
           placeholder="123456789"
         />
@@ -184,7 +165,7 @@ export default {
             type="text"
             id="officeAddress"
             name="officeAddress"
-            v-model="officeAddress"
+            v-model="legalCompany.officeAddress"
             class="group-item"
             placeholder="Address"
           />
@@ -195,7 +176,7 @@ export default {
             type="text"
             id="zipCode"
             name="zipCode"
-            v-model="zipCode"
+            v-model="legalCompany.zipCode"
             class="group-item"
             placeholder="123456789"
           />
@@ -210,7 +191,7 @@ export default {
             type="text"
             id="postalOfficeAddress"
             name="postalOfficeAddress"
-            v-model="postalOfficeAddress"
+            v-model="legalCompany.postalOfficeAddress"
             class="group-item"
             placeholder="Address"
           />
@@ -221,7 +202,7 @@ export default {
             type="text"
             id="zipCodePostal"
             name="zipCodePostal"
-            v-model="zipCodePostal"
+            v-model="legalCompany.zipCodePostal"
             class="group-item"
             placeholder="123456789"
           />
@@ -234,7 +215,7 @@ export default {
             type="text"
             id="phone"
             name="phone"
-            v-model="phone"
+            v-model="legalCompany.phone"
             class="group-item"
             placeholder="+7"
           />
@@ -245,7 +226,7 @@ export default {
             type="text"
             id="email"
             name="email"
-            v-model="email"
+            v-model="legalCompany.email"
             class="group-item"
             placeholder="john@mail.com"
           />
@@ -269,12 +250,12 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
-  cursor: pointer;
 }
 
 .wrap-back img {
   height: 20px;
   width: 20px;
+  cursor: pointer;
 }
 
 .wrap-back span {
@@ -282,6 +263,7 @@ export default {
   font-size: 14px;
   line-height: 19.12px;
   color: #8c93a6;
+  cursor: pointer;
 }
 
 .card {
@@ -360,5 +342,14 @@ h2 {
 
 .vat {
   width: 100%;
+}
+
+@media (max-width: 500px) {
+  .wrap-group {
+    flex-direction: column;
+  }
+  .group {
+    width: 100%;
+  }
 }
 </style>

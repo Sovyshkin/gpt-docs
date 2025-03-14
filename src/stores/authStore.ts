@@ -32,10 +32,12 @@ export const useAuthStore = defineStore('authStore', () => {
             }
         } catch (err) {
             console.log(err);
-            messageStore.message = err.response.data.detail
-            setTimeout(() => {
-                messageStore.message = ''
-            }, 5000)
+            if (err.response) {
+                messageStore.message = err.response.data.detail
+                setTimeout(() => {
+                    messageStore.message = ''
+                }, 5000);
+            }
         }
     }
 
@@ -57,6 +59,10 @@ export const useAuthStore = defineStore('authStore', () => {
             }
         } catch (err) {
             console.log(err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
         }
     }
     

@@ -11,6 +11,10 @@ export default {
         this.$router.go(-1);
       } catch (err) {
         console.log(err);
+        messageStore.message = err.response.data.detail;
+        setTimeout(() => {
+          messageStore.message = "";
+        }, 5000);
       }
     },
   },

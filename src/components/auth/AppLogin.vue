@@ -24,6 +24,10 @@ const openPass = () => {
     passOpen.value = true;
   } catch (err) {
     console.log(err);
+    messageStore.message = err.response.data.detail;
+    setTimeout(() => {
+      messageStore.message = "";
+    }, 5000);
   }
 };
 
@@ -34,6 +38,10 @@ const closePass = () => {
     passOpen.value = false;
   } catch (err) {
     console.log(err);
+    messageStore.message = err.response.data.detail;
+    setTimeout(() => {
+      messageStore.message = "";
+    }, 5000);
   }
 };
 
@@ -42,6 +50,10 @@ const goForgot = () => {
     router.push({ name: "checkEmail" });
   } catch (err) {
     console.log(err);
+    messageStore.message = err.response.data.detail;
+    setTimeout(() => {
+      messageStore.message = "";
+    }, 5000);
   }
 };
 </script>

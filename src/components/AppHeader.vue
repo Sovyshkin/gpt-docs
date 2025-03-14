@@ -1,15 +1,33 @@
-<script>
-export default {
-  name: "AppHeader",
-  components: {},
-  data() {
-    return {};
-  },
-  methods: {},
-  mounted() {},
-};
+<script setup>
+import AppMenu from "./AppMenu.vue";
+// import { useMenuStore } from "@/stores/menuStore.ts";
+
+// const menuStore = useMenuStore();
 </script>
 <template>
-  <div class="wrapper"></div>
+  <header class="header">
+    <div class="wrap-logo">
+      <img class="logo" src="../assets/logo-panel.svg" alt="" />
+    </div>
+    <AppMenu />
+  </header>
 </template>
-<style scoped></style>
+<style scoped>
+.header {
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wrap-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  width: 112px;
+  height: 55px;
+}
+</style>

@@ -1,17 +1,16 @@
-<script>
+<script setup>
 import AppLogo from "../AppLogo.vue";
 import AppTerms from "../AppTerms.vue";
-export default {
-  name: "CheckEmail",
-  components: { AppLogo, AppTerms },
-  data() {
-    return {
-      email: "",
-      message: "",
-    };
-  },
-  methods: {},
-  mounted() {},
+import { useRecoveryStore } from "@/stores/recoveryStore.ts";
+
+const recoveryStore = useRecoveryStore();
+
+const goBack = () => {
+  try {
+    this.$router.go(-1);
+  } catch (err) {
+    console.log(err);
+  }
 };
 </script>
 <template>
@@ -31,13 +30,16 @@ export default {
           type="text"
           id="email"
           name="email"
-          v-model="email"
+          v-model="recoveryStore.email"
           class="group-item"
           placeholder="john@gmail.com"
-          @blur="saveEmail"
         />
       </div>
-      <button class="btn continue" type="button" @click="goNext()">
+      <button
+        class="btn continue"
+        type="button"
+        @click="recoveryStore.send_mail()"
+      >
         Continue
       </button>
       <button class="btn back" type="button" @click="goBack()">Back</button>

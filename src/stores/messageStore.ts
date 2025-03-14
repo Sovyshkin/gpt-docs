@@ -1,9 +1,11 @@
 import { ref, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
+import { useRouter } from 'vue-router'
 
 
 export const useMessageStore = defineStore('messageStore', () => {
     
+    const router = useRouter()
     const message = ref('') // Success message
     const desc = ref('')
     const status = ref('')
@@ -12,9 +14,16 @@ export const useMessageStore = defineStore('messageStore', () => {
         try {
             message.value = ''
         } catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
+
+    watch(message, () => {
+        if (message.value == 'Invalid token') {
+            message.value = ''
+            router.push({ name: 'login' })
+        }
+    })
     
   return { message, desc, status, closeMessage }
 })

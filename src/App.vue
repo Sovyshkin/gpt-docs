@@ -1,11 +1,14 @@
 <script setup>
 import LeftPanel from "./components/LeftPanel.vue";
 import AppHeader from "./components/AppHeader.vue";
-import { useRoute } from "vue-router";
 import AppMessage from "./components/AppMessage.vue";
+import { useRoute } from "vue-router";
+import { useMenuStore } from "@/stores/menuStore.ts";
 
+const menuStore = useMenuStore();
 const route = useRoute();
 
+console.log("menu", menuStore.menu);
 const authChecked = () => {
   try {
     return route.path.includes("auth");
@@ -17,9 +20,12 @@ const authChecked = () => {
 <template>
   <AppMessage />
   <div class="main" v-if="!authChecked()">
-    <LeftPanel class="leftAdap" />
-    <AppHeader class="headerAdap" />
-    <router-view class="router"></router-view>
+    <AppHeader class="mobile" />
+    <LeftPanel class="dekstop" />
+    <transition name="slide" class="mobile">
+      <LeftPanel v-if="menuStore.menu" />
+    </transition>
+    <router-view class="router" v-if="!menuStore.menu"></router-view>
   </div>
   <router-view v-else></router-view>
   <!-- <LeftPanel /> -->
@@ -172,6 +178,11 @@ button::-moz-focus-inner {
   border-radius: 100%;
 }
 
+.mainWrap {
+  display: flex;
+  flex-direction: column;
+}
+
 .main {
   display: flex;
 }
@@ -189,5 +200,50 @@ h1 {
   line-height: 36px;
   font-weight: 400;
   color: #14171f;
+}
+
+.headerAdap {
+  display: none;
+}
+
+/* Анимация появления */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.slide-enter-to,
+.slide-leave-from {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.mobile {
+  display: none !important;
+}
+
+.dekstop {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+  }
+  .headerAdap {
+    display: block;
+  }
+  .mobile {
+    display: flex !important;
+  }
+  .dekstop {
+    display: none !important;
+  }
 }
 </style>

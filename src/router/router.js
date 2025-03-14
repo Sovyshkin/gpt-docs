@@ -24,6 +24,16 @@ const router = createRouter({
       name: "checkEmail",
     },
     {
+      path: "/auth/email-sent",
+      component: () => import("../components/auth/EmailSent.vue"),
+      name: "emailSent",
+    },
+    {
+      path: "/auth/password-reset",
+      component: () => import("../components/auth/PasswordReset.vue"),
+      name: "passwordReset",
+    },
+    {
       path: "/main/account",
       component: () => import("../pages/PersonalAccount.vue"),
       name: "personal",

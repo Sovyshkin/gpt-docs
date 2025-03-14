@@ -55,10 +55,19 @@ export default {
   </div>
   <div class="cards">
     <div class="card" v-for="card in cards" :key="card.id">
-      <span class="card-item">{{ card.name }}</span>
-      <span class="card-item">{{ card.type }}</span>
-      <span class="card-item">{{ card.contacts }}</span>
-      <div class="card-item more">
+      <div class="wrap-card-item">
+        <span class="card-item">Name:</span>
+        <span class="card-value">{{ card.name }}</span>
+      </div>
+      <div class="wrap-card-item">
+        <span class="card-item">Type:</span>
+        <span class="card-value">{{ card.type }}</span>
+      </div>
+      <div class="wrap-card-item">
+        <span class="card-item">Contacts:</span>
+        <span class="card-value">{{ card.contacts }}</span>
+      </div>
+      <div class="more">
         <img @click="card.more = !card.more" src="../assets/more.svg" alt="" />
       </div>
       <div class="options" v-if="card.more">
@@ -101,12 +110,28 @@ export default {
   justify-content: space-between;
 }
 
+.wrap-card-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
 .card-item {
-  width: 25%;
+  display: none;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19.12px;
+  color: rgba(140, 147, 166, 1);
+}
+.card-value {
   font-weight: 500;
   font-size: 14px;
   line-height: 19.12px;
   color: rgba(20, 23, 31, 1);
+}
+
+.wrap-card-item {
+  width: 25%;
 }
 
 .more {
@@ -122,8 +147,8 @@ export default {
 .options {
   width: 108px;
   position: absolute;
-  right: 1%;
-  bottom: -100%;
+  right: 20px;
+  top: 50px;
   padding: 5px 6px;
   border-radius: 8px;
   border: 1px solid rgba(223, 227, 236, 1);
@@ -145,5 +170,32 @@ export default {
 
 .delete {
   color: rgba(223, 58, 68, 1) !important;
+}
+
+@media (max-width: 550px) {
+  .fields {
+    display: none;
+  }
+
+  .card {
+    flex-direction: column;
+    gap: 10px;
+    align-items: start;
+    position: relative;
+  }
+
+  .wrap-card-item {
+    width: 100%;
+  }
+
+  .card-item {
+    display: block;
+  }
+
+  .more {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
 }
 </style>

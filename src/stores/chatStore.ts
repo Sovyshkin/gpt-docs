@@ -2,9 +2,11 @@ import { ref, computed, watch } from 'vue';
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useMessageStore } from './messageStore.ts';
 
 export const useChatStore = defineStore('chatStore', () => {
 
+    const messageStore = useMessageStore()
     const router = useRouter();
     const token = ref(localStorage.getItem('token'));
     const chats = ref([]);
@@ -55,6 +57,10 @@ export const useChatStore = defineStore('chatStore', () => {
                 }
         } catch (err) {
             console.log(err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
             
         }
     }
@@ -87,6 +93,10 @@ export const useChatStore = defineStore('chatStore', () => {
             }
         } catch (err) {
             console.error('Ошибка при создании чата:', err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
         } finally {
             isLoadingSend.value = false
         }
@@ -104,6 +114,10 @@ export const useChatStore = defineStore('chatStore', () => {
             getChats()
         } catch (err) {
             console.error('Ошибка при создании чата:', err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
         }
     };
 
@@ -127,6 +141,10 @@ export const useChatStore = defineStore('chatStore', () => {
             }
         } catch (err) {
             console.error('Ошибка при загрузке чата:', err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
         }
     };
 
@@ -169,6 +187,10 @@ export const useChatStore = defineStore('chatStore', () => {
             }
         } catch (err) {
             console.error('Ошибка при загрузке чатов:', err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
         }
     };
 
@@ -198,6 +220,10 @@ export const useChatStore = defineStore('chatStore', () => {
             }
         } catch (err) {
             console.log(err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
             
         }
     }

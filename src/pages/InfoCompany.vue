@@ -34,6 +34,10 @@ export default {
         this.$router.go(-1);
       } catch (err) {
         console.log(err);
+        messageStore.message = err.response.data.detail;
+        setTimeout(() => {
+          messageStore.message = "";
+        }, 5000);
       }
     },
   },
@@ -224,12 +228,12 @@ h2 {
   font-size: 14px;
   line-height: 19.12px;
   letter-spacing: 0.01em;
-  color: #fff;
   padding: 14.5px 20px;
   border-radius: 8px;
 }
 
 .edit {
+  color: #fff;
   background-color: rgba(0, 94, 255, 1);
 }
 
@@ -278,5 +282,15 @@ h2 {
   width: 80px;
   border-radius: 10px;
   object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .wrap-group {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .group {
+    width: 100% !important;
+  }
 }
 </style>

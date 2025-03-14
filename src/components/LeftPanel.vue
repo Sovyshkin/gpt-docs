@@ -3,35 +3,16 @@ import { ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useChatStore } from "@/stores/chatStore.ts";
 import { useAccountStore } from "@/stores/accountStore.ts";
+import { useMenuStore } from "@/stores/menuStore.ts";
 
 const chatStore = useChatStore();
+const menuStore = useMenuStore();
 const accountStore = useAccountStore();
 const router = useRouter();
 const route = useRoute();
 
 chatStore.getChats();
 
-// const id = ref("1");
-const today = ref([
-  {
-    name: "Table",
-    active: true,
-  },
-  {
-    name: "GPH contracts",
-    active: false,
-  },
-  {
-    name: "Statute",
-    active: false,
-  },
-]);
-// const yesterday = ref([
-//   {
-//     name: "Statute",
-//     active: true,
-//   },
-// ]);
 const footer = ref([
   {
     name: "Legal Information",
@@ -58,11 +39,6 @@ const goProfile = () => {
 const navClick = (name, s) => {
   try {
     if (s == "footer") {
-      for (let i = 0; i < today.value.length; i++) {
-        let item = today.value[i];
-        item.active = false;
-        today.value[i] = item;
-      }
       for (let i = 0; i < footer.value.length; i++) {
         let item = footer.value[i];
         item.active = false;
@@ -76,6 +52,7 @@ const navClick = (name, s) => {
       router.push({ name: name });
     } else {
       chatStore.selectedChat = name;
+      menuStore.menu = false;
       router.push({ name: "chat" });
     }
   } catch (err) {
@@ -119,11 +96,11 @@ watch(
         <img class="logo" src="../assets/logo-panel.svg" alt="" />
       </div>
       <div class="actions">
-        <img src="../assets/switch.svg" alt="" />
-        <div class="group-img">
-          <img src="../assets/search.svg" alt="" />
-          <img src="../assets/add-chat.svg" @click="chatStore.addChat" alt="" />
-        </div>
+        <img src="../assets/search.svg" alt="" />
+        <button class="btn addChat" @click="chatStore.addChat">
+          <span class="text-addChat">Add New Chat</span>
+          <img src="../assets/chat-add.svg" alt="" />
+        </button>
       </div>
       <div class="wrap-group-nav">
         <nav
@@ -202,7 +179,7 @@ watch(
         </div>
         <div class="more">
           <img @click="more = !more" src="../assets/more.svg" alt="" />
-          <div class="options" v-if="more">
+          <div class="options" :class="{ show: more }">
             <button @click="goProfile()">Account</button>
             <button class="delete" @click="accountStore.logOut">Log out</button>
           </div>
@@ -412,5 +389,47 @@ watch(
 
 .delete {
   color: rgba(223, 58, 68, 1) !important;
+}
+
+.addChat {
+  background-color: #1233ea;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14.5px 20px;
+  border-radius: 8px;
+}
+
+.text-addChat {
+  color: #fff;
+  font-weight: 500;
+}
+
+@media (max-width: 1440px) {
+  .profile {
+    flex-direction: column;
+    align-items: start;
+  }
+}
+
+@media (max-width: 1300px) {
+  .text-addChat {
+    display: none;
+  }
+
+  .addChat {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .panel {
+    width: 100%;
+    max-width: auto;
+  }
+
+  .wrap-logo {
+    display: none;
+  }
 }
 </style>

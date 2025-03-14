@@ -38,10 +38,6 @@ export default {
         this.$router.push({ name: "supportOpen", query: { id } });
       } catch (err) {
         console.log(err);
-        messageStore.message = err.response.data.detail;
-        setTimeout(() => {
-          messageStore.message = "";
-        }, 5000);
       }
     },
   },

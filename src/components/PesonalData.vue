@@ -31,10 +31,6 @@ const openPass = (n) => {
     }
   } catch (err) {
     console.log(err);
-    messageStore.message = err.response.data.detail;
-    setTimeout(() => {
-      messageStore.message = "";
-    }, 5000);
   }
 };
 
@@ -55,10 +51,6 @@ const closePass = (n) => {
     }
   } catch (err) {
     console.log(err);
-    messageStore.message = err.response.data.detail;
-    setTimeout(() => {
-      messageStore.message = "";
-    }, 5000);
   }
 };
 </script>

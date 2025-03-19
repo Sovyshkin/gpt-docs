@@ -1,20 +1,18 @@
 <script setup>
-import { ref } from "vue";
-import { useLegalCompany } from "@/stores/legalCompany.ts";
+import { useCompanyStore } from "@/stores/companyStore.ts";
 import { useRouter } from "vue-router";
+import AppLoader from "@/components/AppLoader.vue";
+import Step1_ind from "@/components/individual/Step1_ind";
+import Step2_ind from "@/components/individual/Step2_ind";
+import Step3_ind from "@/components/individual/Step3_ind";
+import Step4_ind from "@/components/individual/Step4_ind";
+import Step1_legal from "@/components/legal/Step1_legal";
+import Step2_legal from "@/components/legal/Step2_legal";
+import Step5_legal from "@/components/legal/Step5_legal";
 
-const legalCompany = useLegalCompany();
+const companyStore = useCompanyStore();
 const router = useRouter();
 
-const corporates = ref([
-  "Private company limited by shares",
-  "Public company by shares",
-  "Public join stock company",
-  "Open joint stock company",
-  "Public Corporation",
-  "Private joint stock company",
-]);
-const countries = ref(["Russia"]);
 const goBack = () => {
   try {
     router.go(-1);
@@ -30,19 +28,21 @@ const goBack = () => {
       <img src="../assets/arrow-left.svg" alt="" />
       <span>Back</span>
     </div>
-    <div class="card">
+    <div class="card" v-if="companyStore.step == 1">
       <h2>Company Information</h2>
       <div class="wrap-group">
         <div class="group">
           <label for="name" class="group-value">Type of Company</label>
-          <input
+          <select
             type="text"
             id="name"
             name="name"
-            v-model="legalCompany.type"
+            v-model="companyStore.type"
             class="group-item"
-            placeholder="Enter your full name"
-          />
+          >
+            <option value="legal">Legal entity</option>
+            <option value="individual">Individual</option>
+          </select>
         </div>
         <div class="group">
           <label for="name" class="group-value">Name</label>
@@ -50,191 +50,45 @@ const goBack = () => {
             type="text"
             id="name"
             name="name"
-            v-model="legalCompany.name"
+            v-model="companyStore.name"
             class="group-item"
             placeholder="Enter the Name"
           />
         </div>
       </div>
       <div class="hr"></div>
-      <div class="wrap-group">
-        <div class="group">
-          <label for="name" class="group-value">Full Company Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            v-model="legalCompany.fullName"
-            class="group-item"
-            placeholder="Full company name"
-          />
-        </div>
-        <div class="group">
-          <label for="name" class="group-value">Company's Corporate type</label>
-          <select
-            type="text"
-            id="name"
-            name="name"
-            v-model="legalCompany.corporateType"
-            class="group-item"
-          >
-            <option :value="item" v-for="(item, i) in corporates" :key="i">
-              {{ item }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <div class="wrap-group">
-        <div class="group">
-          <label for="registrationNumber" class="group-value"
-            >Registration Number</label
-          >
-          <input
-            type="text"
-            id="registrationNumber"
-            name="registrationNumber"
-            v-model="legalCompany.registrationNumber"
-            class="group-item"
-            placeholder="123456789"
-          />
-        </div>
-        <div class="group">
-          <label for="countryCompany" class="group-value"
-            >Country of the Company</label
-          >
-          <select
-            type="text"
-            id="countryCompany"
-            name="countryCompany"
-            v-model="legalCompany.countryCompany"
-            class="group-item"
-          >
-            <option :value="item" v-for="(item, i) in countries" :key="i">
-              {{ item }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <div class="wrap-group">
-        <div class="group">
-          <label for="taxCountry" class="group-value"
-            >Company's Tax Residence Country</label
-          >
-          <select
-            type="text"
-            id="taxCountry"
-            name="taxCountry"
-            v-model="legalCompany.taxCountry"
-            class="group-item"
-          >
-            <option :value="item" v-for="(item, i) in countries" :key="i">
-              {{ item }}
-            </option>
-          </select>
-        </div>
-        <div class="group">
-          <label for="taxPayerId" class="group-value">Taxpayer ID Code</label>
-          <input
-            type="text"
-            id="taxPayerId"
-            name="taxPayerId"
-            v-model="legalCompany.taxPayerId"
-            class="group-item"
-            placeholder="123456789"
-          />
-        </div>
-      </div>
-      <div class="group vat">
-        <label for="vatNumber" class="group-value">VAT Number</label>
-        <input
-          type="text"
-          id="vatNumber"
-          name="vatNumber"
-          v-model="legalCompany.vatNumber"
-          class="group-item"
-          placeholder="123456789"
-        />
-      </div>
-      <div class="hr"></div>
-      <div class="wrap-group">
-        <div class="group">
-          <label for="officeAddress" class="group-value"
-            >Registered Office Address of the Company</label
-          >
-          <input
-            type="text"
-            id="officeAddress"
-            name="officeAddress"
-            v-model="legalCompany.officeAddress"
-            class="group-item"
-            placeholder="Address"
-          />
-        </div>
-        <div class="group">
-          <label for="zipCode" class="group-value">Zip Code</label>
-          <input
-            type="text"
-            id="zipCode"
-            name="zipCode"
-            v-model="legalCompany.zipCode"
-            class="group-item"
-            placeholder="123456789"
-          />
-        </div>
-      </div>
-      <div class="wrap-group">
-        <div class="group">
-          <label for="postalOfficeAddress" class="group-value"
-            >Postal Office Address</label
-          >
-          <input
-            type="text"
-            id="postalOfficeAddress"
-            name="postalOfficeAddress"
-            v-model="legalCompany.postalOfficeAddress"
-            class="group-item"
-            placeholder="Address"
-          />
-        </div>
-        <div class="group">
-          <label for="zipCodePostal" class="group-value">Zip Code</label>
-          <input
-            type="text"
-            id="zipCodePostal"
-            name="zipCodePostal"
-            v-model="legalCompany.zipCodePostal"
-            class="group-item"
-            placeholder="123456789"
-          />
-        </div>
-      </div>
-      <div class="wrap-group">
-        <div class="group">
-          <label for="phone" class="group-value">Phone Number</label>
-          <input
-            type="text"
-            id="phone"
-            name="phone"
-            v-model="legalCompany.phone"
-            class="group-item"
-            placeholder="+7"
-          />
-        </div>
-        <div class="group">
-          <label for="email" class="group-value">Email</label>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            v-model="legalCompany.email"
-            class="group-item"
-            placeholder="john@mail.com"
-          />
-        </div>
-      </div>
-      <div class="wrap-btns">
-        <button class="btn">Next step</button>
-      </div>
+      <Step1_ind
+        v-if="companyStore.type == 'individual' && companyStore.step == 1"
+      />
+      <Step1_legal v-if="companyStore.type == 'legal'" />
+    </div>
+    <Step2_legal
+      v-if="companyStore.type == 'legal' && companyStore.step == 2"
+    />
+    <Step2_ind
+      v-if="companyStore.type == 'individual' && companyStore.step == 2"
+    />
+    <Step3_ind v-if="companyStore.step == 3" />
+    <Step4_ind v-if="companyStore.step == 4" />
+    <Step5_legal
+      v-if="companyStore.type == 'legal' && companyStore.step == 5"
+    />
+    <div class="wrap-btns">
+      <button
+        class="btn back"
+        @click="companyStore.backStep()"
+        :class="{ show: companyStore.step > 1 }"
+      >
+        Back
+      </button>
+      <button
+        class="btn next"
+        v-if="!companyStore.isLoading"
+        @click="companyStore.nextStep()"
+      >
+        Next step
+      </button>
+      <AppLoader v-else />
     </div>
   </div>
 </template>
@@ -247,6 +101,7 @@ const goBack = () => {
 }
 
 .wrap-back {
+  width: fit-content;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -325,7 +180,7 @@ h2 {
 .wrap-btns {
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -334,16 +189,29 @@ h2 {
   font-size: 14px;
   line-height: 19.12px;
   letter-spacing: 0.01em;
-  color: #fff;
-  padding: 14.5px 20px;
+  padding: 10.5px 20px;
   border-radius: 8px;
+}
+
+.back {
+  color: #14171f;
+  background-color: #fff;
+  border: 1px solid rgba(115, 122, 140, 0.1);
+  opacity: 0;
+}
+
+.next {
+  color: #fff;
   background-color: rgba(0, 94, 255, 1);
+}
+
+.show {
+  opacity: 1;
 }
 
 .vat {
   width: 100%;
 }
-
 @media (max-width: 500px) {
   .wrap-group {
     flex-direction: column;
@@ -353,3 +221,4 @@ h2 {
   }
 }
 </style>
+@/stores/companyStore

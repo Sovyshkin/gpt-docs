@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useChatStore } from "@/stores/chatStore.ts";
 import { useAccountStore } from "@/stores/accountStore.ts";
@@ -10,8 +10,6 @@ const menuStore = useMenuStore();
 const accountStore = useAccountStore();
 const router = useRouter();
 const route = useRoute();
-
-chatStore.getChats();
 
 const footer = ref([
   {
@@ -88,6 +86,10 @@ watch(
     checkRoute();
   }
 );
+
+onMounted(() => {
+  chatStore.getChats();
+});
 </script>
 <template>
   <div class="panel">

@@ -67,7 +67,6 @@ const messageStore = useMessageStore();
   left: 50%;
   transform: translateX(-50%);
   width: 330px;
-  height: 80px;
   border-radius: 8px;
   box-sizing: border-box;
   padding: 10px 15px;

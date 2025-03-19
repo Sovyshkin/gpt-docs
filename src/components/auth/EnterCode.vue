@@ -1,6 +1,7 @@
 <script setup>
 import AppLogo from "../AppLogo.vue";
 import AppTerms from "../AppTerms.vue";
+import AppLoader from "../AppLoader.vue";
 import { useAuthStore } from "@/stores/authStore.ts";
 
 const authStore = useAuthStore();
@@ -36,9 +37,15 @@ const authStore = useAuthStore();
           placeholder="Enter the Code"
         />
       </div>
-      <button class="btn continue" type="button" @click="authStore.verifyCode">
+      <button
+        class="btn continue"
+        v-if="!authStore.isLoading"
+        type="button"
+        @click="authStore.verifyCode"
+      >
         Continue
       </button>
+      <AppLoader v-else />
       <span class="sendAgain">Send the email again</span>
     </div>
     <AppTerms />

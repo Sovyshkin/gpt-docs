@@ -1,22 +1,9 @@
-<script>
+<script setup>
 import AppLogo from "../AppLogo.vue";
 import AppTerms from "../AppTerms.vue";
-export default {
-  name: "EmailSent",
-  components: { AppLogo, AppTerms },
-  data() {
-    return {
-      email: "",
-      message: "",
-    };
-  },
-  methods: {
-    resend() {
-      console.log();
-    },
-  },
-  mounted() {},
-};
+import { useRecoveryStore } from "@/stores/recoveryStore.ts";
+import AppLoader from "../AppLoader.vue";
+const recoveryStore = useRecoveryStore();
 </script>
 <template>
   <div class="wrapper">
@@ -30,9 +17,15 @@ export default {
           address. Make sure that you have received the email.</span
         >
       </div>
-      <button class="btn back" type="button" @click="resend()">
+      <button
+        class="btn back"
+        type="button"
+        @click="recoveryStore.send_mail(true)"
+        v-if="!recoveryStore.isLoading"
+      >
         Resend the email
       </button>
+      <AppLoader v-if="recoveryStore.isLoading" />
     </div>
     <AppTerms />
   </div>

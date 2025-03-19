@@ -1,36 +1,24 @@
 <script setup>
 import { ref } from "vue";
-import axios from "axios";
 import AppLogo from "../AppLogo.vue";
 import AppTerms from "../AppTerms.vue";
+import AppLoader from "../AppLoader.vue";
 import { useAuthStore } from "../../stores/authStore.ts";
 import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
 const router = useRouter();
 
-console.log(authStore);
-
-const email = ref("");
-const password = ref("");
 const passOpen = ref(false);
-const step = ref("");
+const step = ref(1);
 
 const goNext = async () => {
   try {
-    console.log(step.value == 2 && email.value && password.value);
-    if (step.value == 2 && email.value && password.value) {
-      let response = await axios.post(`/auth/register`, {
-        name: "testName",
-        email: email.value,
-        password: password.value,
-      });
-      console.log(response);
+    if (step.value == 2 && authStore.email && authStore.password) {
+      router.push({ name: "tellUs" });
     } else {
-      if (email.value) {
+      if (authStore.email || authStore.password) {
         step.value++;
-      } else {
-        this.message = "";
       }
     }
   } catch (err) {
@@ -90,7 +78,7 @@ const closePass = () => {
           type="text"
           id="email"
           name="email"
-          v-model="email"
+          v-model="authStore.email"
           class="group-item"
           placeholder="john@gmail.com"
           @blur="saveEmail"
@@ -102,7 +90,7 @@ const closePass = () => {
           type="password"
           id="password"
           name="password"
-          v-model="password"
+          v-model="authStore.password"
           class="group-item"
           placeholder="password"
         />
@@ -122,9 +110,15 @@ const closePass = () => {
         />
       </div>
       <div class="wrap-btns">
-        <button class="btn continue" type="button" @click="goNext()">
+        <button
+          class="btn continue"
+          v-if="!authStore.isLoading"
+          type="button"
+          @click="goNext()"
+        >
           Continue
         </button>
+        <AppLoader v-else />
         <button class="btn back" type="button" @click="goBack()">Back</button>
       </div>
       <div class="wrap-sign">

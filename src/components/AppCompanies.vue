@@ -1,50 +1,10 @@
-<script>
-export default {
-  name: "AppCompanies",
-  components: {},
-  data() {
-    return {
-      cards: [
-        {
-          id: 1,
-          name: "Name company/user",
-          type: "Individual Entrepreneur",
-          contacts: "mail@gmail.com",
-          more: false,
-        },
-        {
-          id: 2,
-          name: "Name company/user",
-          type: "Individual Entrepreneur",
-          contacts: "mail@gmail.com",
-          more: false,
-        },
-        {
-          id: 3,
-          name: "Name company/user",
-          type: "Individual Entrepreneur",
-          contacts: "mail@gmail.com",
-          more: false,
-        },
-        {
-          id: 4,
-          name: "Name company/user",
-          type: "Individual Entrepreneur",
-          contacts: "mail@gmail.com",
-          more: false,
-        },
-        {
-          id: 5,
-          name: "Name company/user",
-          type: "Individual Entrepreneur",
-          contacts: "mail@gmail.com",
-          more: false,
-        },
-      ],
-    };
-  },
-  methods: {},
-};
+<script setup>
+import { onMounted } from "vue";
+import { useCompanyStore } from "@/stores/companyStore.ts";
+const companyStore = useCompanyStore();
+onMounted(() => {
+  companyStore.getAllCompanies();
+});
 </script>
 <template>
   <div class="fields">
@@ -54,7 +14,7 @@ export default {
     <span class="options-field"></span>
   </div>
   <div class="cards">
-    <div class="card" v-for="card in cards" :key="card.id">
+    <div class="card" v-for="card in companyStore.companies" :key="card.id">
       <div class="wrap-card-item">
         <span class="card-item">Name:</span>
         <span class="card-value">{{ card.name }}</span>

@@ -1,10 +1,13 @@
 <script setup>
 import { useAccountStore } from "@/stores/accountStore.ts";
+import { onMounted } from "vue";
+import { ref } from "vue";
 
 const accountStore = useAccountStore();
 
-import { ref } from "vue";
-const lan = ref("ru");
+onMounted(() => {
+  accountStore.getUser();
+});
 const password = ref("");
 const passOpen = ref(false);
 const passOpen2 = ref(false);
@@ -12,8 +15,6 @@ const passOpen3 = ref(false);
 const passInvalid = ref(false);
 const passInvalid2 = ref(false);
 const passInvalid3 = ref(false);
-const newPass = ref("");
-const newPass2 = ref("");
 const openPass = (n) => {
   try {
     if (n == 1) {
@@ -86,7 +87,8 @@ const closePass = (n) => {
           placeholder="Enter your email"
         />
       </div>
-      <div class="group">
+      <button class="btn" @click="accountStore.updateUser()">Save</button>
+      <!-- <div class="group">
         <label for="lan" class="group-value">Language</label>
         <input
           type="text"
@@ -95,7 +97,7 @@ const closePass = (n) => {
           v-model="lan"
           class="group-item"
         />
-      </div>
+      </div> -->
     </div>
     <div class="card">
       <h2>Change password</h2>
@@ -131,7 +133,7 @@ const closePass = (n) => {
           type="password"
           id="password2"
           name="password"
-          v-model="newPass"
+          v-model="accountStore.new_password1"
           class="group-item"
           :class="{ invalid: passInvalid2 }"
           placeholder="Enter a new password"
@@ -159,7 +161,7 @@ const closePass = (n) => {
           type="password"
           id="password3"
           name="password"
-          v-model="newPass2"
+          v-model="accountStore.new_password2"
           class="group-item"
           :class="{ invalid: passInvalid3 }"
           placeholder="Repeat the new password"
@@ -179,7 +181,9 @@ const closePass = (n) => {
           @click="closePass(3)"
         />
       </div>
-      <button class="btn">Change password</button>
+      <button class="btn" @click="accountStore.changePassword()">
+        Change password
+      </button>
     </div>
   </div>
 </template>
@@ -187,6 +191,7 @@ const closePass = (n) => {
 .cards {
   width: 100%;
   display: flex;
+  align-items: stretch;
   gap: 20px;
 }
 .card {
@@ -194,6 +199,7 @@ const closePass = (n) => {
   padding: 30px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 20px;
   background-color: #fff;
   border: 1px solid rgba(115, 122, 140, 0.1);

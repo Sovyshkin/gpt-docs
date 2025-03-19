@@ -1,18 +1,28 @@
-<script>
+<script setup>
 import AppLogo from "../AppLogo.vue";
 import AppTerms from "../AppTerms.vue";
-export default {
-  name: "TellUs",
-  components: { AppLogo, AppTerms },
-  data() {
-    return {
-      fullname: "",
-      date: "",
-      message: "",
-    };
-  },
-  methods: {},
-  mounted() {},
+import { useAuthStore } from "@/stores/authStore.ts";
+import { useRouter } from "vue-router";
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+const goNext = () => {
+  try {
+    if (authStore.fullname && authStore.date_birth) {
+      authStore.createAccount();
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const goBack = () => {
+  try {
+    router.go(-1);
+  } catch (err) {
+    console.log(err);
+  }
 };
 </script>
 <template>
@@ -26,7 +36,7 @@ export default {
           type="text"
           id="name"
           name="name"
-          v-model="fullname"
+          v-model="authStore.fullname"
           class="group-item"
           placeholder="Enter your full name"
         />
@@ -37,7 +47,7 @@ export default {
           type="date"
           id="date-birth"
           name="date-birth"
-          v-model="date"
+          v-model="authStore.date_birth"
           class="group-item"
           placeholder="__.__.____"
         />
@@ -47,9 +57,12 @@ export default {
         <a href="">terms and conditions</a> and have read our
         <a href="">privacy policy.</a></span
       >
-      <button class="btn continue" type="button" @click="goNext()">
-        Continue
-      </button>
+      <div class="wrap-btns">
+        <button class="btn continue" type="button" @click="goNext()">
+          Continue
+        </button>
+        <button class="btn back" type="button" @click="goBack()">Back</button>
+      </div>
     </div>
     <AppTerms />
   </div>
@@ -112,6 +125,13 @@ export default {
   line-height: 22px;
 }
 
+.wrap-btns {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .btn {
   width: 100%;
   padding: 14.5px 20px;
@@ -124,6 +144,11 @@ export default {
 .continue {
   background-color: #005eff;
   color: #fff;
+}
+
+.back {
+  background-color: #f8f9fc;
+  color: #14171f;
 }
 
 .desc {

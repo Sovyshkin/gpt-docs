@@ -1,74 +1,46 @@
-<script>
+<script setup>
 import AppLogo from "../AppLogo.vue";
 import AppTerms from "../AppTerms.vue";
-export default {
-  name: "PasswordReset",
-  components: { AppLogo, AppTerms },
-  data() {
-    return {
-      password: "",
-      password2: "",
-      passOpen: false,
-      passOpen2: false,
-      message: "",
-      passInvalid: false,
-      passInvalid2: false,
-    };
-  },
-  methods: {
-    goNext() {
-      try {
-        if (this.email && this.password) {
-          this.$router.push({ name: "enterCode" });
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
+import AppLoader from "../AppLoader.vue";
+import { useRecoveryStore } from "@/stores/recoveryStore.ts";
+import { ref } from "vue";
 
-    goBack() {
-      try {
-        if (this.step > 1) {
-          this.step--;
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
+const recoveryStore = useRecoveryStore();
 
-    openPass(n) {
-      try {
-        if (n == 2) {
-          let passNode = document.querySelector(`#password2`);
-          passNode.type = "text";
-          this.passOpen2 = true;
-        } else {
-          let passNode = document.querySelector(`#password`);
-          passNode.type = "text";
-          this.passOpen = true;
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
+const passOpen = ref(false);
+const passOpen2 = ref(false);
+const passInvalid = ref(false);
+const passInvalid2 = ref(false);
+const openPass = (n) => {
+  try {
+    if (n == 1) {
+      passOpen.value = true;
+      let passNode = document.querySelector(`#password`);
+      passNode.type = "text";
+    } else if (n == 2) {
+      passOpen2.value = true;
+      let passNode = document.querySelector(`#password2`);
+      passNode.type = "text";
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-    closePass(n) {
-      try {
-        if (n == 2) {
-          let passNode = document.querySelector(`#password2`);
-          passNode.type = "password";
-          this.passOpen2 = false;
-        } else {
-          let passNode = document.querySelector(`#password`);
-          passNode.type = "password";
-          this.passOpen = false;
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  },
-  mounted() {},
+const closePass = (n) => {
+  try {
+    if (n == 1) {
+      passOpen.value = false;
+      let passNode = document.querySelector(`#password`);
+      passNode.type = "password";
+    } else if (n == 2) {
+      passOpen2.value = false;
+      let passNode = document.querySelector(`#password2`);
+      passNode.type = "password";
+    }
+  } catch (err) {
+    console.log(err);
+  }
 };
 </script>
 <template>
@@ -87,7 +59,7 @@ export default {
           type="password"
           id="password"
           name="password"
-          v-model="password"
+          v-model="recoveryStore.new_password"
           class="group-item"
           :class="{ invalid: passInvalid }"
           placeholder="password"
@@ -113,7 +85,7 @@ export default {
           type="password"
           id="password2"
           name="password"
-          v-model="password"
+          v-model="recoveryStore.confirm_password"
           class="group-item"
           :class="{ invalid: passInvalid2 }"
           placeholder="password"
@@ -133,9 +105,15 @@ export default {
           @click="closePass(2)"
         />
       </div>
-      <button class="btn continue" type="button" @click="goNext()">
+      <button
+        class="btn continue"
+        type="button"
+        v-if="!recoveryStore.isLoading"
+        @click="recoveryStore.resetPass()"
+      >
         Change password
       </button>
+      <AppLoader v-else />
     </div>
     <AppTerms />
   </div>

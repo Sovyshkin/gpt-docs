@@ -8,46 +8,46 @@ export const useChatStore = defineStore('chatStore', () => {
 
     const messageStore = useMessageStore()
     const router = useRouter();
-    const token = ref(localStorage.getItem('token'));
+    const token = localStorage.getItem('token')
     const chats = ref([]);
-    const selectedChat = ref(1)
+    const selectedChat = ref()
     const messages = ref([])
     const message = ref('')
     const isLoadingSend = ref(false)
     const empty = ref(true)
-    const selectedFile = ref({name: "file", size: 0})
+    const selectedFile = ref({ name: "file", size: 0 })
 
     // Обработчик выбора файла
     const handleFileChange = (event) => {
-    const file = event.target.files[0]; // Получаем первый выбранный файл
+        const file = event.target.files[0]; // Получаем первый выбранный файл
 
-    if (file) {
-        // Проверяем, что файл не является изображением
-        if (file.type.startsWith("image/")) {
-        alert("Пожалуйста, выберите файл, который не является изображением.");
-        return;
+        if (file) {
+            // Проверяем, что файл не является изображением
+            if (file.type.startsWith("image/")) {
+            alert("Пожалуйста, выберите файл, который не является изображением.");
+            return;
+            }
+
+            // Сохраняем файл
+            selectedFile.value = file;
         }
+        };
 
-        // Сохраняем файл
-        selectedFile.value = file;
-    }
-    };
-
-    // Очистка выбранного файла
-    const clearFile = () => {
-    selectedFile.value = {name: "file", size: 0};
+        // Очистка выбранного файла
+        const clearFile = () => {
+        selectedFile.value = {name: "file", size: 0};
     };
     // Отправка сообщения
-    const sendMessage = async (file) => {
+    const sendMessage = async (file_id) => {
         try {
             let response = await axios.post(`/messages/create`, {
                     chat_id: selectedChat.value,
                     content: message.value,
                     role: 'user',
-                    file: file
+                    file_id: file_id
                }, {
                    headers: {
-                       Authorization: `Bearer ${token.value}`,
+                       Authorization: `Bearer ${token}`,
                    },
                });
                 console.log(response);
@@ -81,7 +81,7 @@ export const useChatStore = defineStore('chatStore', () => {
                     {
                     headers: {
                         "Content-Type": "multipart/form-data",
-                        Authorization: `Bearer ${token.value}`,
+                        Authorization: `Bearer ${token}`,
                     },
                     }
                 );
@@ -107,7 +107,7 @@ export const useChatStore = defineStore('chatStore', () => {
         try {
             let response = await axios.post(`/chats/create`, {}, {
                 headers: {
-                    Authorization: `Bearer ${token.value}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
             console.log(response);
@@ -124,10 +124,10 @@ export const useChatStore = defineStore('chatStore', () => {
     // Получение конкретного чата по ID
     const getMessages = async () => {
         try {
-            if (token.value) {
+            if (token && selectedChat.value) {
                 let response = await axios.get(`/messages/get_chat_messages?chat_id=${selectedChat.value}`, {
                     headers: {
-                        Authorization: `Bearer ${token.value}`,
+                        Authorization: `Bearer ${token}`,
                     },
                 });
                 console.log(response);
@@ -141,10 +141,12 @@ export const useChatStore = defineStore('chatStore', () => {
             }
         } catch (err) {
             console.error('Ошибка при загрузке чата:', err);
-            messageStore.message = err.response.data.detail
-            setTimeout(() => {
-                messageStore.message = ''
-            }, 5000);
+            if (err.response) {
+                messageStore.message = err.response.data.detail
+                setTimeout(() => {
+                    messageStore.message = ''
+                }, 5000);
+            }
         }
     };
 
@@ -176,13 +178,15 @@ export const useChatStore = defineStore('chatStore', () => {
     // Получение всех чатов
     const getChats = async () => {
         try {
-            if (token.value) {
+            if (token) {
                 let response = await axios.get(`/chats/get_chats`, {
                     headers: {
-                        Authorization: `Bearer ${token.value}`,
+                        Authorization: `Bearer ${token}`,
                     },
                 });
                 chats.value = response.data.chats;
+                selectedChat.value = chats.value[0].id
+                console.log(selectedChat.value)
                 groupedChats()
             }
         } catch (err) {
@@ -196,10 +200,10 @@ export const useChatStore = defineStore('chatStore', () => {
 
     watch(selectedChat, () => {
         Object.values(chats.value).forEach(chatList => {
-    chatList.forEach(item => {
-      item.more = false;
-    });
-  });
+            chatList.forEach(item => {
+            item.more = false;
+            });
+        });
         getMessages()
     })
 
@@ -210,7 +214,7 @@ export const useChatStore = defineStore('chatStore', () => {
                     id: selectedChat.value
                 }, {
                     headers: {
-                        Authorization: `Bearer ${token.value}`,
+                        Authorization: `Bearer ${token}`,
                     },
                 })
                 console.log(response)

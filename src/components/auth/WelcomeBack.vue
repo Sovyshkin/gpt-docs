@@ -1,13 +1,6 @@
-<script>
-export default {
-  name: "WelcomeBack",
-  components: {},
-  data() {
-    return {};
-  },
-  methods: {},
-  mounted() {},
-};
+<script setup>
+import { useMenuStore } from "@/stores/menuStore.ts";
+const menuStore = useMenuStore();
 </script>
 <template>
   <div class="card">
@@ -16,8 +9,10 @@ export default {
       <span class="subtitle">Enter the information below to log in.</span>
     </div>
     <div class="hr"></div>
-    <button class="btn log">Log in</button>
-    <button class="btn sign">Sign Up</button>
+    <button class="btn log" @click="menuStore.goRoute('login')">Log in</button>
+    <button class="btn sign" @click="menuStore.goRoute('register')">
+      Sign Up
+    </button>
   </div>
 </template>
 <style scoped>
@@ -30,6 +25,7 @@ export default {
   flex-direction: column;
   gap: 20px;
   align-items: center;
+  background-color: #fff;
 }
 
 .wrap-title {

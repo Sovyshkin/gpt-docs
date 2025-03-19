@@ -19,6 +19,11 @@ const router = createRouter({
       name: "enterCode",
     },
     {
+      path: "/auth/tell-us",
+      component: () => import("../components/auth/TellUs.vue"),
+      name: "tellUs",
+    },
+    {
       path: "/auth/check-email",
       component: () => import("../components/auth/CheckEmail.vue"),
       name: "checkEmail",
@@ -64,7 +69,7 @@ const router = createRouter({
       name: "legalInfo",
     },
     {
-      path: "/main/chat",
+      path: "/",
       component: () => import("../pages/chat/AppChat.vue"),
       name: "chat",
     },

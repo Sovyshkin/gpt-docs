@@ -19,8 +19,9 @@ export const useMessageStore = defineStore('messageStore', () => {
     }
 
     watch(message, () => {
-        if (message.value == 'Invalid token') {
-            message.value = ''
+        if (message.value == 'Invalid token' || message.value == 'Token expired' || message.value == 'Not authenticated') {
+            message.value = ''  
+            localStorage.clear()
             router.push({ name: 'login' })
         }
     })

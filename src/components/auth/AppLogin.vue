@@ -1,7 +1,6 @@
 <script setup>
 /* eslint-disable */
 import { ref } from "vue";
-import axios from "axios";
 import AppLogo from "../AppLogo.vue";
 import AppTerms from "../AppTerms.vue";
 import AppLoader from "../AppLoader.vue";
@@ -60,8 +59,7 @@ const goForgot = () => {
 <template>
   <div class="wrapper">
     <AppLogo />
-    <AppLoader v-if="authStore.isLoading" />
-    <div class="card" v-else>
+    <div class="card">
       <h2 class="title">Log in</h2>
       <div class="group">
         <label for="email" class="group-value">Email</label>
@@ -104,9 +102,15 @@ const goForgot = () => {
       <div class="wrap-forgot">
         <span class="forgot" @click="goForgot">Forgot password?</span>
       </div>
-      <button class="btn continue" type="button" @click="authStore.logIn">
+      <button
+        class="btn continue"
+        v-if="!authStore.isLoading"
+        type="button"
+        @click="authStore.logIn"
+      >
         Log in
       </button>
+      <AppLoader v-else />
       <div class="wrap-sign">
         <span class="sign">Don't have an account?</span>
         <a @click="$router.push({ name: 'register' })" href="#">Sign up</a>

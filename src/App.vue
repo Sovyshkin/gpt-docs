@@ -2,14 +2,24 @@
 import LeftPanel from "./components/LeftPanel.vue";
 import AppHeader from "./components/AppHeader.vue";
 import AppMessage from "./components/AppMessage.vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useMenuStore } from "@/stores/menuStore.ts";
+import { watch } from "vue";
+import WelcomeBack from "./components/auth/WelcomeBack.vue";
 
 const menuStore = useMenuStore();
 const route = useRoute();
-const router = useRouter();
 
-console.log("menu", menuStore.menu);
+watch(
+  () => route.name,
+  (newName) => {
+    if (!newName) {
+      return;
+    }
+    menuStore.checkToken();
+  }
+);
+
 const authChecked = () => {
   try {
     return route.path.includes("auth");
@@ -17,11 +27,6 @@ const authChecked = () => {
     console.log(err);
   }
 };
-
-const token = localStorage.getItem("token");
-if (!token) {
-  router.push({ name: "login" });
-}
 </script>
 <template>
   <AppMessage />
@@ -34,6 +39,9 @@ if (!token) {
     <router-view class="router" v-if="!menuStore.menu"></router-view>
   </div>
   <router-view v-else></router-view>
+  <v-dialog max-width="500" v-model="menuStore.welcomeShow" persistent>
+    <WelcomeBack />
+  </v-dialog>
   <!-- <LeftPanel /> -->
 </template>
 <style>

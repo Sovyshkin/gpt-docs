@@ -12,12 +12,14 @@ export const useAuthStore = defineStore('authStore', () => {
 
     const email = ref('')
     const password = ref('')
-    const name = ref('')
+    const fullname = ref('')
+    const date_birth = ref('')
     const isLoading = ref(false)
     const code = ref('')
 
     const logIn = async () => {
         try {
+            isLoading.value = true
             if (email.value && password.value) {
                 localStorage.setItem('email', email.value)
                 let response = await axios.post(`/auth/login`, {
@@ -38,13 +40,14 @@ export const useAuthStore = defineStore('authStore', () => {
                     messageStore.message = ''
                 }, 5000);
             }
+        } finally {
+            isLoading.value = false
         }
     }
 
     const verifyCode = async () => {
         try {
-            console.log(code.value);
-            
+            isLoading.value = true
             if (code.value) {
             let response = await axios.post(`/auth/verify_code`, {
                 email: email.value,
@@ -63,10 +66,35 @@ export const useAuthStore = defineStore('authStore', () => {
             setTimeout(() => {
                 messageStore.message = ''
             }, 5000);
+        } finally {
+            isLoading.value = false
         }
     }
     
+    const createAccount = async () => {
+        try {
+            isLoading.value = true
+            let response = await axios.post(`/auth/register`, {
+                name: fullname.value,
+                email: email.value,
+                password: password.value,
+                date_of_birth: date_birth.value
+            });
+            console.log(response);
+            if (response.status == 200) {
+                router.push({ name: 'login' })
+            }
+        } catch (err) {
+            console.log(err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
+        } finally {
+            isLoading.value = false
+        }
+    }
     
 
-  return { email, password, name, isLoading, logIn, code, verifyCode }
+  return { date_birth, email, password, fullname, isLoading, logIn, code, verifyCode, createAccount }
 })

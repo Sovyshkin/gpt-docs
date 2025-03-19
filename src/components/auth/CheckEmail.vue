@@ -1,6 +1,7 @@
 <script setup>
 import AppLogo from "../AppLogo.vue";
 import AppTerms from "../AppTerms.vue";
+import AppLoader from "../AppLoader.vue";
 import { useRecoveryStore } from "@/stores/recoveryStore.ts";
 
 const recoveryStore = useRecoveryStore();
@@ -39,10 +40,19 @@ const goBack = () => {
         class="btn continue"
         type="button"
         @click="recoveryStore.send_mail()"
+        v-if="!recoveryStore.isLoading"
       >
         Continue
       </button>
-      <button class="btn back" type="button" @click="goBack()">Back</button>
+      <button
+        class="btn back"
+        type="button"
+        @click="goBack()"
+        v-if="!recoveryStore.isLoading"
+      >
+        Back
+      </button>
+      <AppLoader v-if="recoveryStore.isLoading" />
     </div>
     <AppTerms />
   </div>

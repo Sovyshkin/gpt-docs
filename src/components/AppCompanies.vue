@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from "vue";
 import { useCompanyStore } from "@/stores/companyStore.ts";
+import AppLoader from "./AppLoader.vue";
 const companyStore = useCompanyStore();
 onMounted(() => {
   companyStore.getAllCompanies();
@@ -13,7 +14,8 @@ onMounted(() => {
     <span>Contacts</span>
     <span class="options-field"></span>
   </div>
-  <div class="cards">
+  <AppLoader class="center" v-if="companyStore.isLoading" />
+  <div class="cards" v-else>
     <div class="card" v-for="card in companyStore.companies" :key="card.id">
       <div class="wrap-card-item">
         <span class="card-item">Name:</span>
@@ -32,7 +34,14 @@ onMounted(() => {
       </div>
       <div class="options" v-if="card.more">
         <button>Edit</button>
-        <button class="delete">Delete</button>
+        <button
+          class="delete"
+          @click="companyStore.deleteCompany(card.id)"
+          v-if="!companyStore.isLoading"
+        >
+          Delete
+        </button>
+        <AppLoader v-else />
       </div>
     </div>
   </div>

@@ -77,6 +77,7 @@ const messageStore = useMessageStore();
   align-items: center;
   justify-content: space-around;
   gap: 15px;
+  z-index: 20;
 }
 .icon-container {
   width: 35px;

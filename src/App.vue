@@ -245,6 +245,9 @@ h1 {
 .dekstop {
   display: block;
 }
+.center {
+  margin: 0 auto;
+}
 
 @media (max-width: 768px) {
   .main {

@@ -2,6 +2,7 @@
 import { useAccountStore } from "@/stores/accountStore.ts";
 import { onMounted } from "vue";
 import { ref } from "vue";
+import AppLoader from "./AppLoader.vue";
 
 const accountStore = useAccountStore();
 
@@ -56,7 +57,8 @@ const closePass = (n) => {
 };
 </script>
 <template>
-  <div class="cards">
+  <AppLoader class="center" v-if="accountStore.isLoading" />
+  <div class="cards" v-else>
     <div class="card">
       <h2>My data</h2>
       <div class="group-avatar">
@@ -87,7 +89,14 @@ const closePass = (n) => {
           placeholder="Enter your email"
         />
       </div>
-      <button class="btn" @click="accountStore.updateUser()">Save</button>
+      <button
+        class="btn"
+        @click="accountStore.updateUser()"
+        v-if="!accountStore.isLoading3"
+      >
+        Save
+      </button>
+      <AppLoader class="center" v-else />
       <!-- <div class="group">
         <label for="lan" class="group-value">Language</label>
         <input
@@ -181,9 +190,14 @@ const closePass = (n) => {
           @click="closePass(3)"
         />
       </div>
-      <button class="btn" @click="accountStore.changePassword()">
+      <button
+        class="btn"
+        @click="accountStore.changePassword()"
+        v-if="!accountStore.isLoading2"
+      >
         Change password
       </button>
+      <AppLoader class="center" v-else />
     </div>
   </div>
 </template>

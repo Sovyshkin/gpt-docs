@@ -29,6 +29,7 @@ const footer = ref([
 const more = ref(false);
 const goProfile = () => {
   try {
+    menuStore.menu = false;
     router.push({ name: "personal" });
   } catch (err) {
     console.log(err);
@@ -47,10 +48,12 @@ const navClick = (name, s) => {
         }
         footer.value[i] = item;
       }
+      menuStore.menu = false;
       router.push({ name: name });
     } else {
       chatStore.selectedChat = name;
       menuStore.menu = false;
+      console.log("menu", menuStore.menu);
       router.push({ name: "chat" });
     }
   } catch (err) {
@@ -170,7 +173,7 @@ onMounted(() => {
       </nav>
       <div class="miniHR"></div>
       <div class="wrap-profile">
-        <div class="profile" @click="$router.push({ name: 'personal' })">
+        <div class="profile" @click="goProfile()">
           <div class="avatar">
             <img src="../assets/image.png" alt="" />
           </div>

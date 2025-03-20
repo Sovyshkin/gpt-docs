@@ -67,7 +67,7 @@ export const useRecoveryStore = defineStore('recoveryStore', () => {
                         messageStore.desc = ''
                         messageStore.status = ''
                         router.push({ name: 'login' })
-            }, 3000);
+                    }, 3000);
                 }
             } else {
                 messageStore.message = 'Incorrect'

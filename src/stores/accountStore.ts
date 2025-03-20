@@ -14,6 +14,9 @@ export const useAccountStore = defineStore('accountStore', () => {
     const token = localStorage.getItem('token')
     const new_password1 = ref('')
     const new_password2 = ref('')
+    const isLoading = ref(false)
+    const isLoading2 = ref(false)
+    const isLoading3 = ref(false)
 
     const logOut = () => {
         try {
@@ -30,6 +33,7 @@ export const useAccountStore = defineStore('accountStore', () => {
 
     const getUser = async () => {
         try {
+            isLoading.value = true
             let response = await axios.get(`/users/get`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -44,11 +48,14 @@ export const useAccountStore = defineStore('accountStore', () => {
             setTimeout(() => {
                 messageStore.message = ''
             }, 5000)
+        } finally {
+            isLoading.value = false
         }
     }
 
     const updateUser = async () => {
         try {
+            isLoading3.value = true
             let response = await axios.post(`/users/update`, {
                 email: email.value,
                 name: fullname.value
@@ -74,11 +81,14 @@ export const useAccountStore = defineStore('accountStore', () => {
             setTimeout(() => {
                 messageStore.message = ''
             }, 5000)
+        } finally {
+            isLoading3.value = false
         }
     }
 
     const changePassword = async () => {
         try {
+            isLoading2.value = true
             if (new_password1.value == new_password2.value) {
                 let response = await axios.post(`/users/change_password`, {
                     new_password: new_password1.value
@@ -103,8 +113,10 @@ export const useAccountStore = defineStore('accountStore', () => {
             setTimeout(() => {
                 messageStore.message = ''
             }, 5000)
+        } finally {
+            isLoading2.value = false
         }
     }
 
-  return { email, fullname, logOut, getUser, updateUser, changePassword }
+  return { isLoading, isLoading2, isLoading3, email, fullname, logOut, getUser, updateUser, changePassword }
 })

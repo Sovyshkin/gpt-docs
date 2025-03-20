@@ -142,6 +142,7 @@ export const useCompanyStore = defineStore('companyStore', () => {
 
     const getAllCompanies = async () => {
         try {
+            isLoading.value = true
             let response = await axios.get(`/companies/get_all_companies`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -155,6 +156,8 @@ export const useCompanyStore = defineStore('companyStore', () => {
             setTimeout(() => {
                 messageStore.message = ''
             }, 5000);
+        } finally {
+            isLoading.value = false
         }
     }
 
@@ -371,6 +374,38 @@ export const useCompanyStore = defineStore('companyStore', () => {
         }
     }
 
+    const deleteCompany = async (id) => {
+        try {
+            console.log(id);
+            isLoading.value = true
+            if (id) {
+                let response = await axios.post(`/companies/delete_company?company_id=${id}`, {}, {
+                    headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                })
+                console.log(response);
+                if (response.status == 200) {
+                    getAllCompanies()
+                    messageStore.message = 'Success'
+                    messageStore.status = '200'
+                    setTimeout(() => {
+                        messageStore.message = ''
+                        messageStore.status = ''
+                    }, 5000);
+                }
+            }
+        } catch (err) {
+            console.log(err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
+        } finally {
+            isLoading.value = false
+        }
+    }
+
      // Обработчик выбора файла
     const handleFileChange = (event) => {
         const file = event.target.files[0]; // Получаем первый выбранный файл
@@ -386,5 +421,5 @@ export const useCompanyStore = defineStore('companyStore', () => {
     };
 
     
-  return {isLoading, filesCreate, logoCreate, signatoryCreate, bankIndividualCreate, companies, addedSign, addedBank, getCompany, getAllCompanies, getIndividualCompanies, getLegalCompanies, individualCreate, company_id, companyCreate, beneficiary_bank_address, beneficiary_tax_id, beneficiary_bank_swift, correspondent_bank_name, correspondent_bank_address, correspondent_bank_account_no, correspondent_bank_aba, correspondent_bank_swift, beneficiary_bank_account_with_the_correspondent_bank, beneficiary_name, beneficiary_account_no, beneficiary_iban, beneficiary_bank_id, beneficiary_bank, beneficiary_bank_country, selectedFile, handleFileChange, clearFile, title_of_the_sole_signatory, signatory_name_and_surname, nextStep, backStep, step, account_holder_full_name, bank_account, name_of_the_bank, currency, bank_identification_code, bank_country, bank_address, account_holders_address, account_holders_email, correspondent_account, correspondent_bank, legalCreate, type, name, fullName, corporateType, registrationNumber, countryCompany, taxCountry, taxPayerId, vatNumber, officeAddress, zipCode, postalOfficeAddress, zipCodePostal, phone, email, passportNumber, dob, registerAddress }
+  return {deleteCompany, isLoading, filesCreate, logoCreate, signatoryCreate, bankIndividualCreate, companies, addedSign, addedBank, getCompany, getAllCompanies, getIndividualCompanies, getLegalCompanies, individualCreate, company_id, companyCreate, beneficiary_bank_address, beneficiary_tax_id, beneficiary_bank_swift, correspondent_bank_name, correspondent_bank_address, correspondent_bank_account_no, correspondent_bank_aba, correspondent_bank_swift, beneficiary_bank_account_with_the_correspondent_bank, beneficiary_name, beneficiary_account_no, beneficiary_iban, beneficiary_bank_id, beneficiary_bank, beneficiary_bank_country, selectedFile, handleFileChange, clearFile, title_of_the_sole_signatory, signatory_name_and_surname, nextStep, backStep, step, account_holder_full_name, bank_account, name_of_the_bank, currency, bank_identification_code, bank_country, bank_address, account_holders_address, account_holders_email, correspondent_account, correspondent_bank, legalCreate, type, name, fullName, corporateType, registrationNumber, countryCompany, taxCountry, taxPayerId, vatNumber, officeAddress, zipCode, postalOfficeAddress, zipCodePostal, phone, email, passportNumber, dob, registerAddress }
 })

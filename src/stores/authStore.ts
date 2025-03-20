@@ -58,6 +58,9 @@ export const useAuthStore = defineStore('authStore', () => {
                 if (token) {
                     localStorage.setItem('token', token)
                 }
+                setTimeout(() => {
+                    location.reload()
+                }, 500)
                 router.push({ name: 'chat' })
             }
         } catch (err) {

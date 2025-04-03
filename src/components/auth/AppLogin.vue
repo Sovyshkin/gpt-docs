@@ -113,7 +113,7 @@ const goForgot = () => {
       <AppLoader v-else />
       <div class="wrap-sign">
         <span class="sign">Don't have an account?</span>
-        <a @click="$router.push({ name: 'register' })" href="#">Sign up</a>
+        <router-link to="/auth/register">Sign up</router-link>
       </div>
       <div class="wrap-hr">
         <div class="hr"></div>

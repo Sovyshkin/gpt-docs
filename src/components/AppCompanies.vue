@@ -16,7 +16,7 @@ onMounted(() => {
   </div>
   <AppLoader class="center" v-if="companyStore.isLoading" />
   <div class="cards" v-else>
-    <div class="card" v-for="card in companyStore.companies" :key="card.id">
+    <div class="card" v-for="card in companyStore.companies" @click="companyStore.goCompany(card.id)" :key="card.id">
       <div class="wrap-card-item">
         <span class="card-item">Name:</span>
         <span class="card-value">{{ card.name }}</span>

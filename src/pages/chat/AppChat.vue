@@ -1,11 +1,14 @@
 <script setup>
+import { ref, watch, nextTick, onMounted } from "vue";
 import DocPanel from "./DocPanel.vue";
 import { useChatStore } from "@/stores/chatStore.ts";
 import AppLoader from "@/components/AppLoader.vue";
 import AppEmpty from "@/components/AppEmpty.vue";
 
 const chatStore = useChatStore();
-chatStore.getMessages();
+// chatStore.getMessages();
+
+const messagesContainer = ref(null); // Создаем ref для контейнера сообщений
 
 const handleEnter = (event) => {
   if (event.key === "Enter" && !event.shiftKey) {
@@ -13,12 +16,38 @@ const handleEnter = (event) => {
     chatStore.addMessage();
   }
 };
+
+// Функция для прокрутки к последнему сообщению
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTo({
+        top: messagesContainer.value.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  });
+};
+
+// Отслеживаем изменения в массиве сообщений
+watch(
+  () => chatStore.messages,
+  () => {
+    scrollToBottom();
+  }
+);
+
+// Прокручиваем к последнему сообщению при монтировании компонента
+onMounted(() => {
+  scrollToBottom();
+});
 </script>
+
 <template>
   <div class="wrapper">
     <DocPanel />
     <div class="chat">
-      <div class="messages" v-if="!chatStore.empty">
+      <div class="messages" v-if="!chatStore.empty" ref="messagesContainer">
         <div
           class="wrap-message"
           v-for="message in chatStore.messages"

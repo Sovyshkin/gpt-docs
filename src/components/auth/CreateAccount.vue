@@ -36,13 +36,6 @@ const goBack = () => {
   }
 };
 
-const goLog = () => {
-  try {
-    router.push({ name: "login" });
-  } catch (err) {
-    console.log(err);
-  }
-};
 
 const openPass = () => {
   try {
@@ -123,7 +116,7 @@ const closePass = () => {
       </div>
       <div class="wrap-sign">
         <span class="sign">Do you already have an account?</span>
-        <a @click="goLog" href="#">Log in</a>
+        <router-link to="/auth/login">Log in</router-link>
       </div>
       <div class="wrap-hr">
         <div class="hr"></div>

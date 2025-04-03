@@ -14,21 +14,22 @@ export const useCompanyStore = defineStore('companyStore', () => {
     const addedBank = ref(false)
     const addedSign = ref(false)
     const individual_company_id = ref('')
+    const legal_company_id = ref('')
     const isLoading = ref(false)
     
     const fullName = ref("");
     const type = ref("individual");
     const name = ref("");
-    const step = ref(4)
+    const step = ref(1)
     const company_id = ref('')
     const token = localStorage.getItem('token')
     
     // legal entity
     // step 1
-    const corporateType = ref("");
+    const corporateType = ref("Private company limited by shares");
     const registrationNumber = ref("");
-    const countryCompany = ref("");
-    const taxCountry = ref("");
+    const countryCompany = ref("Russia");
+    const taxCountry = ref("Russia");
     const taxPayerId = ref("");
     const vatNumber = ref("");
     const officeAddress = ref("");
@@ -83,33 +84,37 @@ export const useCompanyStore = defineStore('companyStore', () => {
             isLoading.value = true
             if (step.value == 1 && !company_id.value) {
                 await companyCreate()
-            } else if (step.value == 3) {
-                signatoryCreate()
+            } else if (step.value == 3 && addedSign.value) {
+                await signatoryCreate()
             }
             if (type.value == 'individual') {
                 if (step.value < 4) {
                     if (step.value == 1) {
                         await individualCreate()
                     } else if (step.value == 2 && addedBank.value) {
-                        bankIndividualCreate()
+                        await bankIndividualCreate()
                     }
                     step.value++
                 }
             } else {
                 if (step.value < 5) {
                     if (step.value == 1) {
-                        legalCreate()
+                        await legalCreate()
+                    } else if (step.value == 2 && addedBank.value) {
+                        await bankLegalCreate()
                     } else if (step.value == 4) {
-                        filesCreate()
+                        await filesCreate()
                     }
                     step.value++
                 } else {
-                    logoCreate()
+                    await logoCreate()
                 }
             }
         } catch (err) {
             console.log(err);
             
+        } finally {
+            isLoading.value = false
         }
     }
 
@@ -123,8 +128,9 @@ export const useCompanyStore = defineStore('companyStore', () => {
         }
     }
 
-     const getCompany = async () => {
+    const getCompany = async () => {
         try {
+            isLoading.value = true
             let response = await axios.get(`/companies/get_company?company_id=${company_id.value}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -137,6 +143,8 @@ export const useCompanyStore = defineStore('companyStore', () => {
             setTimeout(() => {
                 messageStore.message = ''
             }, 5000);
+        } finally {
+            isLoading.value = false
         }
     }
 
@@ -190,6 +198,7 @@ export const useCompanyStore = defineStore('companyStore', () => {
             let response = await axios.post(`/individual_companies/create?company_id=${company_id.value}`, {
                 name: fullName.value,
                 passport_number: passportNumber.value,
+                phone_number: '+7922',
                 registered_address: registerAddress.value,
                 date_of_birth: dob.value
             }, {
@@ -198,6 +207,9 @@ export const useCompanyStore = defineStore('companyStore', () => {
                     },
             })
             console.log(response);
+            if (response.status == 200) {
+                individual_company_id.value = response.data.id
+            }
         } catch (err) {
             console.log(err);
             messageStore.message = err.response.data.detail
@@ -210,7 +222,7 @@ export const useCompanyStore = defineStore('companyStore', () => {
     const bankIndividualCreate = async () => {
         try {
             isLoading.value = true
-            let response = await axios.post(`/individual_companies/create?individual_company_id=1`, {
+            let response = await axios.post(`/individual_companies/create?individual_company_id=${individual_company_id.value}`, {
                 account_holder_full_name: account_holder_full_name.value,
                 bank_name: name_of_the_bank.value,
                 bank_country: bank_country.value,
@@ -222,6 +234,43 @@ export const useCompanyStore = defineStore('companyStore', () => {
                 account_holder_email: account_holders_email.value,
                 correspondent_bank: correspondent_bank.value,
                 currency: currency.value
+            }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+            })
+            console.log(response);
+        } catch (err) {
+            console.log(err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    const bankLegalCreate = async () => {
+        try {
+            isLoading.value = true
+            let response = await axios.post(`/legal_bank_accounts/create`, {
+                legal_company_id: legal_company_id.value,
+                beneficiary_name: beneficiary_name.value,
+                currency: currency.value,
+                account_number: beneficiary_account_no.value,
+                iban: beneficiary_iban.value,
+                bank_id: beneficiary_bank_id.value,
+                bank_name: beneficiary_bank.value,
+                bank_country: beneficiary_bank_country.value,
+                bank_address: beneficiary_bank_address.value,
+                tax_id: taxPayerId.value,
+                swift_code: beneficiary_bank_swift.value,
+                correspondent_bank_name: correspondent_bank_name.value,
+                correspondent_account_number: correspondent_bank_account_no.value,
+                correspondent_bank_address: correspondent_bank_address.value,
+                correspondent_aba: correspondent_bank_aba.value,
+                correspondent_swift: correspondent_bank_swift.value
             }, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -263,6 +312,9 @@ export const useCompanyStore = defineStore('companyStore', () => {
                     },
             })
             console.log(response)
+            if (response.status == 200) {
+                legal_company_id.value = response.data.legal_company.id
+            }
         } catch (err) {
             console.log(err);
         } finally {
@@ -316,6 +368,9 @@ export const useCompanyStore = defineStore('companyStore', () => {
                 }
             })
             console.log(response)
+            if (response.status == 200) {
+                selectedFile.value = {name: "file", size: 0}
+            }
         } catch (err) {
             console.log(err);
             messageStore.message = err.response.data.detail
@@ -332,13 +387,16 @@ export const useCompanyStore = defineStore('companyStore', () => {
             isLoading.value = true
             const formData = new FormData();
             formData.append("file", selectedFile.value);
-            let response = await axios.post(`/company_files/create?company_id=1`, formData, {
+            let response = await axios.post(`/company_files/create?company_id=${company_id.value}`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`,
                 }
             })
             console.log(response)
+            if (response.status == 200) {
+                selectedFile.value = {name: "file", size: 0}
+            }
         } catch (err) {
             console.log(err);
             messageStore.message = err.response.data.detail
@@ -352,9 +410,10 @@ export const useCompanyStore = defineStore('companyStore', () => {
 
     const signatoryCreate = async () => {
         try {
+            isLoading.value = true
             const formData = new FormData();
             formData.append("file", selectedFile.value);
-            formData.append("company_id", 1);
+            formData.append("company_id", company_id.value);
             formData.append("name", signatory_name_and_surname.value);
             formData.append("title", title_of_the_sole_signatory.value);
             formData.append("email", email.value);
@@ -365,12 +424,17 @@ export const useCompanyStore = defineStore('companyStore', () => {
                 },
             })
             console.log(response)
+            if (response.status == 200) {
+                selectedFile.value = {name: "file", size: 0}
+            }
         } catch (err) {
             console.log(err);
             messageStore.message = err.response.data.detail
             setTimeout(() => {
                 messageStore.message = ''
             }, 5000);
+        } finally {
+            isLoading.value = false
         }
     }
 
@@ -420,6 +484,34 @@ export const useCompanyStore = defineStore('companyStore', () => {
         selectedFile.value = {name: "file", size: 0};
     };
 
+    const goCompany = async (id) => {
+        try {
+            isLoading.value = true
+            company_id.value = id
+            router.push({ name: 'infoCompany' })
+            await getCompany()
+        } catch (err) {
+            console.log(err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    const goBack = () => {
+        try {
+            router.go(-1)
+        } catch (err) {
+            console.log(err);
+            messageStore.message = err.response.data.detail
+            setTimeout(() => {
+                messageStore.message = ''
+            }, 5000);
+        }
+    }
     
-  return {deleteCompany, isLoading, filesCreate, logoCreate, signatoryCreate, bankIndividualCreate, companies, addedSign, addedBank, getCompany, getAllCompanies, getIndividualCompanies, getLegalCompanies, individualCreate, company_id, companyCreate, beneficiary_bank_address, beneficiary_tax_id, beneficiary_bank_swift, correspondent_bank_name, correspondent_bank_address, correspondent_bank_account_no, correspondent_bank_aba, correspondent_bank_swift, beneficiary_bank_account_with_the_correspondent_bank, beneficiary_name, beneficiary_account_no, beneficiary_iban, beneficiary_bank_id, beneficiary_bank, beneficiary_bank_country, selectedFile, handleFileChange, clearFile, title_of_the_sole_signatory, signatory_name_and_surname, nextStep, backStep, step, account_holder_full_name, bank_account, name_of_the_bank, currency, bank_identification_code, bank_country, bank_address, account_holders_address, account_holders_email, correspondent_account, correspondent_bank, legalCreate, type, name, fullName, corporateType, registrationNumber, countryCompany, taxCountry, taxPayerId, vatNumber, officeAddress, zipCode, postalOfficeAddress, zipCodePostal, phone, email, passportNumber, dob, registerAddress }
+  return {goBack, goCompany, bankLegalCreate, deleteCompany, isLoading, filesCreate, logoCreate, signatoryCreate, bankIndividualCreate, companies, addedSign, addedBank, getCompany, getAllCompanies, getIndividualCompanies, getLegalCompanies, individualCreate, company_id, companyCreate, beneficiary_bank_address, beneficiary_tax_id, beneficiary_bank_swift, correspondent_bank_name, correspondent_bank_address, correspondent_bank_account_no, correspondent_bank_aba, correspondent_bank_swift, beneficiary_bank_account_with_the_correspondent_bank, beneficiary_name, beneficiary_account_no, beneficiary_iban, beneficiary_bank_id, beneficiary_bank, beneficiary_bank_country, selectedFile, handleFileChange, clearFile, title_of_the_sole_signatory, signatory_name_and_surname, nextStep, backStep, step, account_holder_full_name, bank_account, name_of_the_bank, currency, bank_identification_code, bank_country, bank_address, account_holders_address, account_holders_email, correspondent_account, correspondent_bank, legalCreate, type, name, fullName, corporateType, registrationNumber, countryCompany, taxCountry, taxPayerId, vatNumber, officeAddress, zipCode, postalOfficeAddress, zipCodePostal, phone, email, passportNumber, dob, registerAddress }
 })

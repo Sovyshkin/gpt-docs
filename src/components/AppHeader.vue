@@ -6,7 +6,7 @@ import AppMenu from "./AppMenu.vue";
 </script>
 <template>
   <header class="header">
-    <div class="wrap-logo">
+    <div class="wrap-logo" @click="$router.push({ name: 'chat' })">
       <img class="logo" src="../assets/logo-panel.svg" alt="" />
     </div>
     <AppMenu />
@@ -24,6 +24,7 @@ import AppMenu from "./AppMenu.vue";
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .logo {

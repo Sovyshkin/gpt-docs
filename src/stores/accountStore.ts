@@ -9,6 +9,7 @@ export const useAccountStore = defineStore('accountStore', () => {
     
     const messageStore = useMessageStore()
     const router = useRouter()
+    const active = ref(1)
     const email = ref(localStorage.getItem('email') || '')
     const fullname = ref('testName')
     const token = localStorage.getItem('token')
@@ -118,5 +119,13 @@ export const useAccountStore = defineStore('accountStore', () => {
         }
     }
 
-  return { isLoading, isLoading2, isLoading3, email, fullname, logOut, getUser, updateUser, changePassword }
+    const go_add_company = () => {
+        try {
+          router.push({ name: "newCompany" });
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+  return { active, go_add_company, isLoading, isLoading2, isLoading3, email, fullname, logOut, getUser, updateUser, changePassword }
 })

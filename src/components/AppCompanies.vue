@@ -30,13 +30,13 @@ onMounted(() => {
         <span class="card-value">{{ card.contacts }}</span>
       </div>
       <div class="more">
-        <img @click="card.more = !card.more" src="../assets/more.svg" alt="" />
+        <img @click.stop="card.more = !card.more" src="../assets/more.svg" alt="" />
       </div>
       <div class="options" v-if="card.more">
         <button>Edit</button>
         <button
           class="delete"
-          @click="companyStore.deleteCompany(card.id)"
+          @click.stop="companyStore.deleteCompany(card.id)"
           v-if="!companyStore.isLoading"
         >
           Delete

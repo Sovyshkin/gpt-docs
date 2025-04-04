@@ -1,6 +1,6 @@
 import { ref, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import { useMessageStore } from './messageStore.ts'
 
@@ -8,6 +8,7 @@ import { useMessageStore } from './messageStore.ts'
 export const useCompanyStore = defineStore('companyStore', () => {
     
     const router = useRouter()
+    const route = useRoute()
     const messageStore = useMessageStore()
 
     const companies = ref([])
@@ -16,6 +17,7 @@ export const useCompanyStore = defineStore('companyStore', () => {
     const individual_company_id = ref('')
     const legal_company_id = ref('')
     const isLoading = ref(false)
+    const gotCompany = ref({})
     
     const fullName = ref("");
     const type = ref("individual");
@@ -91,10 +93,13 @@ export const useCompanyStore = defineStore('companyStore', () => {
                 if (step.value < 4) {
                     if (step.value == 1) {
                         await individualCreate()
-                    } else if (step.value == 2 && addedBank.value) {
+                    } else if (step.value == 2 && addedBank.value && individual_company_id.value) {
                         await bankIndividualCreate()
                     }
                     step.value++
+                } else {
+                    await filesCreate()
+                    router.push({ name: 'personal', query: { active: 2 } })
                 }
             } else {
                 if (step.value < 5) {
@@ -108,6 +113,7 @@ export const useCompanyStore = defineStore('companyStore', () => {
                     step.value++
                 } else {
                     await logoCreate()
+                    router.push({ name: 'personal', query: { active: 2 } })
                 }
             }
         } catch (err) {
@@ -131,12 +137,14 @@ export const useCompanyStore = defineStore('companyStore', () => {
     const getCompany = async () => {
         try {
             isLoading.value = true
-            let response = await axios.get(`/companies/get_company?company_id=${company_id.value}`, {
+            company_id.value = route.query.company_id
+            let response = await axios.get(`/companies/get_details/${company_id.value}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
             })
             console.log(response);
+            gotCompany.value = response.data.company
         } catch (err) {
             console.log(err);
             messageStore.message = err.response.data.detail
@@ -361,7 +369,7 @@ export const useCompanyStore = defineStore('companyStore', () => {
             isLoading.value = true
             const formData = new FormData();
             formData.append("file", selectedFile.value);
-            let response = await axios.post(`/company_logos/create?company_id=1`, formData, {
+            let response = await axios.post(`/company_logos/create?company_id=${company_id.value}`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`,
@@ -484,12 +492,10 @@ export const useCompanyStore = defineStore('companyStore', () => {
         selectedFile.value = {name: "file", size: 0};
     };
 
-    const goCompany = async (id) => {
+    const goCompany = (id) => {
         try {
             isLoading.value = true
-            company_id.value = id
-            router.push({ name: 'infoCompany' })
-            await getCompany()
+            router.push({ name: 'infoCompany', query: { company_id: id } })
         } catch (err) {
             console.log(err);
             messageStore.message = err.response.data.detail
@@ -513,5 +519,5 @@ export const useCompanyStore = defineStore('companyStore', () => {
         }
     }
     
-  return {goBack, goCompany, bankLegalCreate, deleteCompany, isLoading, filesCreate, logoCreate, signatoryCreate, bankIndividualCreate, companies, addedSign, addedBank, getCompany, getAllCompanies, getIndividualCompanies, getLegalCompanies, individualCreate, company_id, companyCreate, beneficiary_bank_address, beneficiary_tax_id, beneficiary_bank_swift, correspondent_bank_name, correspondent_bank_address, correspondent_bank_account_no, correspondent_bank_aba, correspondent_bank_swift, beneficiary_bank_account_with_the_correspondent_bank, beneficiary_name, beneficiary_account_no, beneficiary_iban, beneficiary_bank_id, beneficiary_bank, beneficiary_bank_country, selectedFile, handleFileChange, clearFile, title_of_the_sole_signatory, signatory_name_and_surname, nextStep, backStep, step, account_holder_full_name, bank_account, name_of_the_bank, currency, bank_identification_code, bank_country, bank_address, account_holders_address, account_holders_email, correspondent_account, correspondent_bank, legalCreate, type, name, fullName, corporateType, registrationNumber, countryCompany, taxCountry, taxPayerId, vatNumber, officeAddress, zipCode, postalOfficeAddress, zipCodePostal, phone, email, passportNumber, dob, registerAddress }
+  return {gotCompany, goBack, goCompany, bankLegalCreate, deleteCompany, isLoading, filesCreate, logoCreate, signatoryCreate, bankIndividualCreate, companies, addedSign, addedBank, getCompany, getAllCompanies, getIndividualCompanies, getLegalCompanies, individualCreate, company_id, companyCreate, beneficiary_bank_address, beneficiary_tax_id, beneficiary_bank_swift, correspondent_bank_name, correspondent_bank_address, correspondent_bank_account_no, correspondent_bank_aba, correspondent_bank_swift, beneficiary_bank_account_with_the_correspondent_bank, beneficiary_name, beneficiary_account_no, beneficiary_iban, beneficiary_bank_id, beneficiary_bank, beneficiary_bank_country, selectedFile, handleFileChange, clearFile, title_of_the_sole_signatory, signatory_name_and_surname, nextStep, backStep, step, account_holder_full_name, bank_account, name_of_the_bank, currency, bank_identification_code, bank_country, bank_address, account_holders_address, account_holders_email, correspondent_account, correspondent_bank, legalCreate, type, name, fullName, corporateType, registrationNumber, countryCompany, taxCountry, taxPayerId, vatNumber, officeAddress, zipCode, postalOfficeAddress, zipCodePostal, phone, email, passportNumber, dob, registerAddress }
 })

@@ -1,10 +1,13 @@
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import AppLoader from '@/components/AppLoader.vue';
   import { useCompanyStore } from '@/stores/companyStore.ts';
   const companyStore = useCompanyStore()
 
-  const fullName = ref("Avola")
+  onMounted(() => {
+    companyStore.getCompany()
+  })
+
   const corporateType = ref("Public company by share")
   const currency = ref("USD")
   // const corporateType2 = ref("1234567890")
@@ -26,6 +29,22 @@
       size: "9.23 MB",
     },
   ])
+
+  const banks = () => {
+    try {
+      return companyStore.gotCompany.individual_details.bank_accounts.length
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const signs = () => {
+    try {
+      return companyStore.gotCompany.signatories.length
+    } catch (err) {
+      console.log(err);
+    }
+  }
 </script>
 <template>
   <div class="wrapper">
@@ -44,16 +63,16 @@
       <div class="wrap-group info">
         <div class="group">
           <span for="name" class="group-value">Full Company Name</span>
-          <span class="group-item">{{ fullName }}</span>
+          <span class="group-item">{{ companyStore.gotCompany.name }}</span>
         </div>
         <div class="group">
           <span for="name" class="group-value">Company's Corporate Type</span>
-          <span class="group-item">{{ corporateType }}</span>
+          <span class="group-item">{{ companyStore.gotCompany.type }}</span>
         </div>
       </div>
       <div class="hr"></div>
       <h2>Company's Bank Account Details</h2>
-      <div class="wrap-group bank">
+      <div class="wrap-group bank" v-if="banks()">
         <div class="group">
           <span for="name" class="group-value">Currency</span>
           <span class="group-item">{{ currency }}</span>
@@ -77,7 +96,7 @@
       </div>
       <div class="hr"></div>
       <h2>Signatories</h2>
-      <div class="wrap-group signatories">
+      <div class="wrap-group signatories" v-if="signs()">
         <div class="group">
           <span for="name" class="group-value"
             >Signatory Name and Surname*</span

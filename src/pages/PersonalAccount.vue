@@ -1,51 +1,41 @@
-<script>
+<script setup>
 import PesonalData from "@/components/PesonalData.vue";
 import AppCompanies from "@/components/AppCompanies.vue";
-export default {
-  name: "PersonalAccount",
-  components: { PesonalData, AppCompanies },
-  data() {
-    return {
-      active: 2,
-    };
-  },
-  methods: {
-    go_add_company() {
-      try {
-        this.$router.push({ name: "newCompany" });
-      } catch (err) {
-        console.log(err);
-      }
-    },
-  },
-};
+import { useAccountStore } from "@/stores/accountStore.ts";
+import { useRoute } from "vue-router";
+
+const accountStore = useAccountStore()
+const route = useRoute()
+if (route.query.active) {
+  accountStore.active = route.query.active
+}
 </script>
 <template>
   <div class="wrapper">
     <div class="wrap-title">
       <h1>Personal account</h1>
-      <button @click="go_add_company()" v-if="active == 2" class="btn active">
+      <button @click="accountStore.go_add_company()" v-if="accountStore.active == 2" class="btn active">
         Add company
       </button>
     </div>
     <div class="wrap-btns">
       <button
         class="btn"
-        @click="active = 1"
-        :class="{ active: this.active == 1 }"
+        @click="accountStore.active = 1"
+        :class="{ active: accountStore.active == 1 }"
       >
         Personal Data
       </button>
       <button
         class="btn"
-        @click="active = 2"
-        :class="{ active: this.active == 2 }"
+        @click="accountStore.active = 2"
+        :class="{ active: accountStore.active == 2 }"
       >
         Companies
       </button>
     </div>
-    <PesonalData v-if="active == 1" />
-    <AppCompanies v-if="active == 2" />
+    <PesonalData v-if="accountStore.active == 1" />
+    <AppCompanies v-if="accountStore.active == 2" />
   </div>
 </template>
 <style scoped>

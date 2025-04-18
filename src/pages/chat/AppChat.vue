@@ -3,6 +3,7 @@ import { ref, watch, nextTick, onMounted } from "vue";
 import DocPanel from "./DocPanel.vue";
 import { useChatStore } from "@/stores/chatStore.ts";
 import AppLoader from "@/components/AppLoader.vue";
+import ChatLoader from "@/components/ChatLoader.vue";
 import AppEmpty from "@/components/AppEmpty.vue";
 
 const chatStore = useChatStore();
@@ -21,6 +22,7 @@ const handleEnter = (event) => {
 const scrollToBottom = () => {
   nextTick(() => {
     if (messagesContainer.value) {
+      console.log(messagesContainer.value);
       messagesContainer.value.scrollTo({
         top: messagesContainer.value.scrollHeight,
         behavior: "smooth",
@@ -29,12 +31,14 @@ const scrollToBottom = () => {
   });
 };
 
-// Отслеживаем изменения в массиве сообщений
 watch(
-  () => chatStore.messages,
-  () => {
-    scrollToBottom();
-  }
+    () => chatStore.messages,
+    () => {
+      console.log('новое сообщение');
+      chatStore.isLoading = false
+      scrollToBottom();
+    },
+    { deep: true, immediate: true }
 );
 
 // Прокручиваем к последнему сообщению при монтировании компонента
@@ -47,7 +51,7 @@ onMounted(() => {
   <div class="wrapper">
     <DocPanel />
     <div class="chat">
-      <div class="messages" v-if="!chatStore.empty" ref="messagesContainer">
+      <div class="messages" v-if="!chatStore.empty && !chatStore.isLoading" ref="messagesContainer">
         <div
           class="wrap-message"
           v-for="message in chatStore.messages"
@@ -61,9 +65,9 @@ onMounted(() => {
             <div
               class="message"
               v-if="!message.file_id"
+              v-html="message.content"
               :class="{ userMessage: message.role == 'user' }"
             >
-              {{ message.content }}
             </div>
             <div
               class="message doc"
@@ -86,13 +90,14 @@ onMounted(() => {
               <img
                 src="../../assets/gpt.svg"
                 alt=""
-                v-if="message.role == 'gpt'"
+                v-else
               />
             </div>
           </div>
         </div>
       </div>
-      <AppEmpty v-else />
+      <AppEmpty v-if="chatStore.empty && !chatStore.isLoading" />
+      <ChatLoader class="left" v-if="chatStore.chatLoader"/>
       <div class="group-send">
         <div class="group-file">
           <input
@@ -173,7 +178,7 @@ label {
   width: 100%;
   max-width: 640px;
   margin: 0 auto;
-  height: 80vh;
+  height: 82vh;
   background-color: #f8f9fc;
   padding: 20px;
   border-radius: 20px;
@@ -345,5 +350,12 @@ label {
   width: 18px;
   height: 18px;
   cursor: pointer;
+}
+
+.left {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  padding-left: 20px;
 }
 </style>

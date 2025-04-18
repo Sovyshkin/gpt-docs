@@ -13,7 +13,9 @@ export const useChatStore = defineStore('chatStore', () => {
     const messages = ref([]);
     const message = ref('');
     const isLoadingSend = ref(false);
-    const empty = ref(true);
+    const isLoading = ref(true)
+    const chatLoader = ref(true)
+    const empty = ref(false);
     const selectedFile = ref({ name: "file", size: 0 });
     const pingInterval = ref(null);
     let socket = null;
@@ -41,9 +43,24 @@ export const useChatStore = defineStore('chatStore', () => {
         socket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
+                console.log('получено',data);
+                chatLoader.value = true
+                
+                if (data.messages) {
+                    messages.value = data.messages.reverse() || []
+                    if (messages.value.length > 0) {
+                        empty.value = false
+                    } else {
+                        empty.value = true
+                    }
+                    console.log("Messages updated:", messages.value);
+                    isLoading.value = false
+                    chatLoader.value = false
+                }
                 switch (data.action) {
-                    case 'send_message':
-                        messages.value.push(data.message);
+                    case 'new_message':
+                        chatLoader.value = true
+                        messages.value.push(data);
                         break;
                     case 'delete_message':
                         messages.value = messages.value.filter(msg => msg.id !== data.message_id);
@@ -55,6 +72,25 @@ export const useChatStore = defineStore('chatStore', () => {
                         break;
                     case 'history_loaded':
                         messages.value = [...data.messages];
+                        break;
+                    case 'chat_messages':
+                        isLoading.value = true
+                        if (data.chat_id === selectedChat.value) {
+                            // Создаем новый массив для триггера реактивности
+                            const newMessages = Array.isArray(data.messages) 
+                                ? [...data.messages] 
+                                : [];
+                            
+                            // Обновляем messages, сохраняя порядок (новые внизу)
+                            messages.value = newMessages.reverse();
+                            if (messages.value.length > 0) {
+                                empty.value = false
+                            } else {
+                                empty.value = true
+                            }
+                            console.log("Messages updated:", messages.value);
+                        }
+                        isLoading.value = false
                         break;
                     case 'error':
                         messageStore.message = data.details;
@@ -88,6 +124,7 @@ export const useChatStore = defineStore('chatStore', () => {
                 action: 'get_chat_message',
                 chat_id: selectedChat.value
             }));
+
         }
     };
 
@@ -372,5 +409,5 @@ export const useChatStore = defineStore('chatStore', () => {
         }
     });
 
-    return { updateMessage, deleteMessage, selectedFile, empty, isLoadingSend, chats, selectedChat, message, messages, addMessage, addChat, getMessages, getChats, handleFileChange, clearFile, deleteChat };
+    return { chatLoader, updateMessage, deleteMessage, selectedFile, empty, isLoadingSend, isLoading, chats, selectedChat, message, messages, addMessage, addChat, getMessages, getChats, handleFileChange, clearFile, deleteChat };
 });

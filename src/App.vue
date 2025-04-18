@@ -50,6 +50,7 @@ const authChecked = () => {
   font-family: "Poppins", serif;
   width: 100%;
 }
+
 * {
   padding: 0px;
   margin: 0px;

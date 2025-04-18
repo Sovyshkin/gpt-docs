@@ -199,6 +199,7 @@ onMounted(() => {
 }
 .panel {
   width: 25%;
+  height: 100vh;
   max-width: 310px;
   background-color: #fff;
   padding-bottom: 20px;
@@ -206,6 +207,8 @@ onMounted(() => {
   flex-direction: column;
   justify-content: space-between;
   gap: 20px;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .wrap-logo {

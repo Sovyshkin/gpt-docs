@@ -69,18 +69,17 @@ onMounted(() => {
               :class="{ userMessage: message.role == 'user' }"
             >
             </div>
-            <div
+            <a
               class="message doc"
               v-if="message.file_id"
               :key="message.id"
               :class="{ userMessage: message.role == 'user' }"
+              :href="`http://38.180.137.72:9000/files/${message.content}`"
+              target="_blank"
             >
               <img src="../../assets/message-file.svg" alt="" />
-              <div class="info">
-                <span class="name">{{ message.name }}</span>
-                <span class="size">{{ message.size }}</span>
-              </div>
-            </div>
+                <span class="name">{{ message.content }}</span>
+            </a>
             <div class="avatar">
               <img
                 src="../../assets/image.png"
@@ -287,6 +286,7 @@ label {
 
 .doc {
   display: flex;
+  align-items: center;
   gap: 10px;
   cursor: pointer;
 }

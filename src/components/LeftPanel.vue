@@ -228,7 +228,7 @@ onMounted(() => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .actions,
@@ -285,7 +285,7 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   border-radius: 8px;
-  padding: 12px 6px 12px 12px;
+  padding: 8px 6px 8px 12px;
   transition: all 500ms ease;
 }
 .nav-item-info {

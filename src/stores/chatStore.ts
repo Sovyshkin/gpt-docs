@@ -58,6 +58,10 @@ export const useChatStore = defineStore('chatStore', () => {
                     chatLoader.value = false
                 }
                 switch (data.action) {
+                    case 'send_message':
+                        chatLoader.value = true
+                        messages.value.push(data);
+                        break;
                     case 'new_message':
                         chatLoader.value = true
                         messages.value.push(data);
@@ -240,6 +244,16 @@ export const useChatStore = defineStore('chatStore', () => {
     const addMessage = async () => {
         try {
             isLoadingSend.value = true;
+            isLoading.value = true
+
+            messages.value.push({
+                action: 'send_message',
+            chat_id: selectedChat.value,
+            content: message.value,
+            role: 'user',
+            file_id: selectedFile.value || null
+            })
+
             if (selectedFile.value.size == 0) {
                 await sendMessage(0);
             } else {
@@ -267,7 +281,7 @@ export const useChatStore = defineStore('chatStore', () => {
                 messageStore.message = '';
             }, 5000);
         } finally {
-            isLoadingSend.value = false;
+            isLoadingSend.value = false
         }
     };
 
@@ -401,6 +415,26 @@ export const useChatStore = defineStore('chatStore', () => {
         }
     };
 
+    const getFile = async (id) => {
+        try {
+            console.log(id);
+            
+            let response = await axios.get(`/files/get_file?id=${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            console.log(response);
+            
+        } catch (err) {
+            console.log(err);
+            messageStore.message = err.response.data.detail;
+            setTimeout(() => {
+                messageStore.message = '';
+            }, 5000);
+        }
+    }
+
     // Закрытие WebSocket при уничтожении компонента
     onUnmounted(() => {
         if (socket) {
@@ -409,5 +443,5 @@ export const useChatStore = defineStore('chatStore', () => {
         }
     });
 
-    return { chatLoader, updateMessage, deleteMessage, selectedFile, empty, isLoadingSend, isLoading, chats, selectedChat, message, messages, addMessage, addChat, getMessages, getChats, handleFileChange, clearFile, deleteChat };
+    return { getFile, chatLoader, updateMessage, deleteMessage, selectedFile, empty, isLoadingSend, isLoading, chats, selectedChat, message, messages, addMessage, addChat, getMessages, getChats, handleFileChange, clearFile, deleteChat };
 });
